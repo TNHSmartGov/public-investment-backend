@@ -20,8 +20,6 @@ public interface IGenericService<E, F, D, I> {
 
     void softDeleteById(I id);
 
-    void restoreEntitySoftDelete(I id);
-
     void softDeleteAllByIds(List<I> ids);
 
     D findById(I id);

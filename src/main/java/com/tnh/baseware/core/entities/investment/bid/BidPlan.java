@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.doc.FileDocument;
@@ -22,7 +21,6 @@ import com.tnh.baseware.core.entities.investment.Project;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity(name = "BidPlan", alias = "bidPlan", description = "Represents an bid plan")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BidPlan extends Auditable<String> implements Serializable {
 

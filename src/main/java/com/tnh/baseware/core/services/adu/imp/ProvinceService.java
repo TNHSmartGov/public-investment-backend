@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.adu.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.adu.ProvinceDTO;
 import com.tnh.baseware.core.entities.adu.Province;
 import com.tnh.baseware.core.forms.adu.ProvinceEditorForm;
@@ -27,10 +26,9 @@ public class ProvinceService extends
         IProvinceService {
 
     public ProvinceService(IProvinceRepository repository,
-            IProvinceMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Province.class, enumRegistry);
+                           IProvinceMapper mapper,
+                           MessageService messageService) {
+        super(repository, mapper, messageService, Province.class);
     }
 
     @Override

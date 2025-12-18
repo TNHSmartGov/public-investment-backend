@@ -3,20 +3,15 @@ package com.tnh.baseware.core.services.investment.imp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.dtos.investment.project.ProjectCheckAprroveDTO;
 import com.tnh.baseware.core.dtos.investment.project.ProjectDTO;
-import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.entities.investment.Project;
-import com.tnh.baseware.core.entities.user.User;
-import com.tnh.baseware.core.enums.OrganizationLevel;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
 import com.tnh.baseware.core.forms.investment.ProjectEditorForm;
 import com.tnh.baseware.core.mappers.investment.IProjectMapper;
@@ -33,7 +28,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import com.tnh.baseware.core.services.investment.IProjectService;
 import com.tnh.baseware.core.services.investment.capital.imp.CapitalAllocationService;
@@ -59,12 +53,11 @@ public class ProjectService extends
     public ProjectService(IProjectRepository repository,
             IProjectMapper mapper,
             IIndustryRepository industryRepository,
-            EnumRegistry enumRegistry,
             ICategoryRepository categoryRepository,
             IOrganizationRepository organizationRepository,
             ICapitalAllocationRepository capitalAllocationRepository,
             MessageService messageService, CapitalAllocationService capitalAllocationsService, GenericEntityFetcher fetcher) {
-        super(repository, mapper, messageService, Project.class, enumRegistry);
+        super(repository, mapper, messageService, Project.class);
         this.repository = repository;
         this.organizationRepository = organizationRepository;
         this.categoryRepository = categoryRepository;
@@ -140,25 +133,7 @@ public class ProjectService extends
     @Transactional(readOnly = true)
     public Page<ProjectDTO> findAll(Pageable pageable) {
 
-        User currentUser = getCurrentUser();
-
-        Page<Project> projects;
-
-        if (Boolean.TRUE.equals(currentUser.getCanViewAll())) {
-            // có quyền xem tất cả
-            projects = repository.findAll(pageable);
-        } else {
-            // lọc các organization của user có cấp OWNER
-            List<Organization> ownerOrgs = currentUser.getOrganizations().stream()
-                    .filter(org -> org.getLevel() == OrganizationLevel.OWNER.getValue())
-                    .collect(Collectors.toList());
-
-            if (ownerOrgs.isEmpty()) {
-                projects = Page.empty(pageable);
-            } else {
-                projects = repository.findByOwnerOrgIn(ownerOrgs, pageable);
-            }
-        }
+        Page<Project> projects = repository.findAll(pageable);
 
         return projects.map(mapper::entityToDTO);
     }
@@ -167,25 +142,7 @@ public class ProjectService extends
     @Transactional(readOnly = true)
     public List<ProjectDTO> findAll() {
 
-        User currentUser = getCurrentUser();
-
-        List<Project> projects;
-
-        if (Boolean.TRUE.equals(currentUser.getCanViewAll())) {
-            // có quyền xem tất cả
-            projects = repository.findAll();
-        } else {
-            // lọc các organization của user có cấp OWNER
-            List<Organization> ownerOrgs = currentUser.getOrganizations().stream()
-                    .filter(org -> org.getLevel() == OrganizationLevel.OWNER.getValue())
-                    .collect(Collectors.toList());
-
-            if (ownerOrgs.isEmpty()) {
-                projects = new ArrayList<>();
-            } else {
-                projects = repository.findByOwnerOrgIn(ownerOrgs);
-            }
-        }
+        List<Project> projects = repository.findAll();
 
         return mapper.entitiesToDTOs(projects);
     }
@@ -196,28 +153,7 @@ public class ProjectService extends
         var specification = new GenericSpecification<Project>(searchRequest);
         var pageable = GenericSpecification.getPageable(searchRequest.getPage(), searchRequest.getSize());
 
-        User currentUser = getCurrentUser();
-
-        Page<Project> projects;
-
-        if (Boolean.TRUE.equals(currentUser.getCanViewAll())) {
-            // có quyền xem tất cả
-            projects = repository.findAll(specification, pageable);
-        } else {
-            // lọc các organization của user có cấp OWNER
-            List<Organization> ownerOrgs = currentUser.getOrganizations().stream()
-                    .filter(org -> org.getLevel() == OrganizationLevel.OWNER.getValue())
-                    .collect(Collectors.toList());
-
-            if (ownerOrgs.isEmpty()) {
-                projects = Page.empty(pageable);
-            } else {
-                Specification<Project> byOwnerOrgs = (root, query, cb) ->
-                root.get("ownerOrg").in(ownerOrgs);
-                
-                projects = repository.findAll(Specification.where(specification).and(byOwnerOrgs), pageable);
-            }
-        }
+        Page<Project> projects = repository.findAll(specification, pageable);
 
         return projects.map(mapper::entityToDTO);
     }

@@ -1,7 +1,6 @@
 package com.tnh.baseware.core.entities.investment.history;
 
 import com.tnh.baseware.core.entities.audit.Auditable;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DisbursementHistory extends Auditable<String> implements Serializable {
     

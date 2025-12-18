@@ -1,14 +1,10 @@
 package com.tnh.baseware.core.services.user.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
-import com.tnh.baseware.core.components.TenantContext;
-import com.tnh.baseware.core.dtos.user.TenantContextDTO;
 import com.tnh.baseware.core.dtos.user.UserDTO;
 import com.tnh.baseware.core.dtos.user.UserTokenDTO;
 import com.tnh.baseware.core.entities.user.Menu;
 import com.tnh.baseware.core.entities.user.User;
-import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
 import com.tnh.baseware.core.exceptions.BWCValidationException;
 import com.tnh.baseware.core.forms.user.ChangePasswordForm;
@@ -18,7 +14,6 @@ import com.tnh.baseware.core.forms.user.UserEditorForm;
 import com.tnh.baseware.core.forms.user.UserProfileForm;
 import com.tnh.baseware.core.mappers.user.IMenuMapper;
 import com.tnh.baseware.core.mappers.user.IUserMapper;
-import com.tnh.baseware.core.mappers.adu.IOrganizationMapper;
 import com.tnh.baseware.core.properties.SecurityProperties;
 import com.tnh.baseware.core.repositories.adu.IOrganizationRepository;
 import com.tnh.baseware.core.repositories.user.IMenuRepository;
@@ -39,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,9 +51,7 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
     PasswordEncoder passwordEncoder;
     JwtTokenService jwtTokenService;
     SecurityProperties securityProperties;
-    TenantService tenantService;
     IMenuMapper menuMapper;
-    IOrganizationMapper organizationMapper;
     GenericEntityFetcher fetcher;
 
     public UserService(IUserRepository repository,
@@ -68,22 +62,16 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
             IMenuRepository menuRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenService jwtTokenService,
-            EnumRegistry enumRegistry,
             SecurityProperties securityProperties,
-            TenantService tenantService,
-            IMenuMapper menuMapper, 
-            IOrganizationMapper organizationMapper,
-            GenericEntityFetcher fetcher) {
-        super(repository, mapper, messageService, User.class, enumRegistry);
+            IMenuMapper menuMapper, GenericEntityFetcher fetcher) {
+        super(repository, mapper, messageService, User.class);
         this.roleRepository = roleRepository;
         this.organizationRepository = organizationRepository;
         this.menuRepository = menuRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenService = jwtTokenService;
         this.securityProperties = securityProperties;
-        this.tenantService = tenantService;
         this.menuMapper = menuMapper;
-        this.organizationMapper = organizationMapper;
         this.fetcher = fetcher;
     }
 
@@ -106,51 +94,34 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
     @Override
     @Transactional
     public UserDTO registerUser(RegisterForm form, HttpServletRequest request) {
-        var tenantName = request.getHeader("X-Tenant");
-        if (BasewareUtils.isBlank(tenantName)) {
-            throw new BWCValidationException(messageService.getMessage("tenant.name.empty"));
+        if (repository.existsByUsernameOrPhoneOrEmailOrIdn(form.getUsername(), form.getPhone(), form.getEmail(),
+                form.getIdn())) {
+            throw new BWCValidationException(messageService.getMessage("user.already.exists"));
         }
 
-        var tenant = tenantService.findByNameAndActiveTrue(tenantName)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("tenant.not.found", tenantName)));
+        var user = User.builder()
+                .username(form.getUsername())
+                .password(passwordEncoder.encode(form.getPassword()))
+                .firstName(form.getFirstName())
+                .lastName(form.getLastName())
+                .fullName(form.getFullName())
+                .phone(form.getPhone())
+                .email(form.getEmail())
+                .avatarUrl(form.getAvatarUrl())
+                .idn(form.getIdn())
+                .ial(form.getIal())
+                .enabled(securityProperties.getRegister().isEnabled())
+                .build();
 
-        TenantContext.setTenant(TenantContextDTO.builder()
-                .tenantId(tenant.getName())
-                .schemaName(tenant.getSchemaName())
-                .build());
+        var roles = roleRepository.findAllByField("name", securityProperties.getRegister().getRoleDefault());
+        var role = BasewareUtils.isBlank(roles) ? null : roles.getFirst();
 
-        try {
-            if (repository.existsByUsernameOrPhoneOrEmailOrIdn(form.getUsername(), form.getPhone(), form.getEmail(),
-                    form.getIdn())) {
-                throw new BWCValidationException(messageService.getMessage("user.already.exists"));
-            }
-
-            var user = User.builder()
-                    .username(form.getUsername())
-                    .password(passwordEncoder.encode(form.getPassword()))
-                    .firstName(form.getFirstName())
-                    .lastName(form.getLastName())
-                    .fullName(form.getFullName())
-                    .phone(form.getPhone())
-                    .email(form.getEmail())
-                    .avatarUrl(form.getAvatarUrl())
-                    .idn(form.getIdn())
-                    .ial(form.getIal())
-                    .enabled(securityProperties.getRegister().isEnabled())
-                    .build();
-
-            var roles = roleRepository.findAllByField("name", securityProperties.getRegister().getRoleDefault());
-            var role = BasewareUtils.isBlank(roles) ? null : roles.getFirst();
-
-            if (BasewareUtils.isBlank(role)) {
-                throw new BWCNotFoundException(messageService.getMessage("role.not.found"));
-            }
-
-            user.addRole(role);
-            return mapper.entityToDTO(repository.save(user));
-        } finally {
-            TenantContext.clear();
+        if (BasewareUtils.isBlank(role)) {
+            throw new BWCNotFoundException(messageService.getMessage("role.not.found"));
         }
+
+        user.addRole(role);
+        return mapper.entityToDTO(repository.save(user));
     }
 
     @Override
@@ -270,18 +241,13 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
 
         List<Menu> menus;
         if (Boolean.TRUE.equals(user.getSuperAdmin())) {
-            menus = menuRepository.findAllWithParent();
+            menus = menuRepository.findAll();
         } else {
             menus = user.getRoles().stream()
-                    .flatMap(role -> role.getMenus().stream()).filter(menu -> menu.getParent() == null)
+                    .flatMap(role -> role.getMenus().stream())
                     .collect(Collectors.collectingAndThen(
-                            Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Menu::getMenuOrder))),
+                            Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Menu::getId))),
                             ArrayList::new));
-        }
-
-        List<Organization> owners = new ArrayList();
-        if (Boolean.FALSE.equals(user.getSuperAdmin())) {
-            owners = organizationRepository.findAllOwnersByUser(user.getId());
         }
 
         if (BasewareUtils.isBlank(menus)) {
@@ -307,7 +273,6 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
                 .failedLoginAttempts(user.getFailedLoginAttempts())
                 .superAdmin(user.getSuperAdmin())
                 .menus(menuMapper.entitiesToDTOs(menus))
-                .owners(organizationMapper.entitiesToDTOs(owners))
                 .build();
     }
 
@@ -398,6 +363,19 @@ public class UserService extends GenericService<User, UserEditorForm, UserDTO, I
         }
         if (passwordEncoder.matches(form.getPasswordNew(), user.getPassword())) {
             throw new BWCValidationException(messageService.getMessage("auth.password.same"));
+        }
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BWCValidationException(messageService.getMessage("file.empty"));
+        }
+        // checking file type xlsx , xls
+        String contentType = file.getContentType();
+        if (!"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equals(contentType) &&
+                !"application/vnd.ms-excel".equals(contentType)) {
+            throw new BWCValidationException(messageService.getMessage("file.invalid.type"));
+
         }
     }
 

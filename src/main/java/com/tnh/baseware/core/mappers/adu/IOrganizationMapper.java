@@ -37,7 +37,6 @@ public interface IOrganizationMapper extends IGenericMapper<Organization, Organi
                 .latitude(parent.getLatitude())
                 .longitude(parent.getLongitude())
                 .level(parent.getLevel())
-                .type(parent.getType())
                 .build();
     }
 

@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.adu.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.adu.OrganizationDTO;
 import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -33,12 +32,10 @@ public class OrganizationService extends
     IUserRepository userRepository;
 
     public OrganizationService(IOrganizationRepository repository,
-            IOrganizationMapper mapper,
-
-            MessageService messageService,
-            IUserRepository userRepository,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Organization.class, enumRegistry);
+                               IOrganizationMapper mapper,
+                               MessageService messageService,
+                               IUserRepository userRepository) {
+        super(repository, mapper, messageService, Organization.class);
         this.userRepository = userRepository;
     }
 
@@ -78,8 +75,8 @@ public class OrganizationService extends
             return;
         }
 
-        var parent = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        var parent = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
 
         var children = repository.findAllById(ids);
         if (BasewareUtils.isBlank(children)) {
@@ -100,8 +97,8 @@ public class OrganizationService extends
             return;
         }
 
-        var parent = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        var parent = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
 
         var children = repository.findAllById(ids);
         if (BasewareUtils.isBlank(children)) {
@@ -122,8 +119,8 @@ public class OrganizationService extends
             return;
         }
 
-        var organization = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        var organization = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
 
         var users = userRepository.findAllById(ids);
         if (BasewareUtils.isBlank(users)) {
@@ -141,8 +138,8 @@ public class OrganizationService extends
             return;
         }
 
-        var organization = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        var organization = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
 
         var users = userRepository.findAllById(ids);
         if (BasewareUtils.isBlank(users)) {

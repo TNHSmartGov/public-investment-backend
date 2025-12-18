@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.audit.Category;
 import com.tnh.baseware.core.entities.investment.Project;
@@ -21,7 +20,6 @@ import com.tnh.baseware.core.entities.investment.Project;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity(name = "Package", alias = "Package", description = "Represents an Package")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PackageBid extends Auditable<String> implements Serializable {
 

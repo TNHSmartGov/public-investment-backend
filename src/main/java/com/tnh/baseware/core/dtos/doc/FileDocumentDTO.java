@@ -20,6 +20,7 @@ public class FileDocumentDTO extends RepresentationModel<FileDocumentDTO> implem
 
     UUID id;
     String name;
-    String url;
     String description;
+    String contentType;
+    Long size;
 }

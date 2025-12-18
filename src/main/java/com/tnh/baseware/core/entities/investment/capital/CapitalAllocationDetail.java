@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.audits.listeners.CapitalAllocationDetailAuditListener;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.investment.progress.AllocationExecution;
@@ -25,7 +24,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Entity
 @NoArgsConstructor
-@ScanableEntity
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(CapitalAllocationDetailAuditListener.class)

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalPlanLineDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlan;
@@ -39,9 +38,8 @@ public class CapitalPlanLineService extends
         public CapitalPlanLineService(ICapitalPlanLineRepository repository,
             ICapitalPlanLineMapper mapper,
             ICapitalPlanRepository capitalPlanRepository,
-            MessageService messageService,
-            EnumRegistry enumRegistry, GenericEntityFetcher fetcher) {
-                super(repository, mapper, messageService, CapitalPlanLine.class, enumRegistry);
+            MessageService messageService, GenericEntityFetcher fetcher) {
+                super(repository, mapper, messageService, CapitalPlanLine.class);
                 this.capitalPlanRepository = capitalPlanRepository;
                 this.mapper = mapper;
                 this.fetcher = fetcher;

@@ -12,7 +12,6 @@ import com.tnh.baseware.core.repositories.investment.progress.IDisbursementRepos
 import com.tnh.baseware.core.services.GenericService;
 import com.tnh.baseware.core.services.MessageService;
 import com.tnh.baseware.core.services.investment.progress.IDisbursementService;
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
 
@@ -40,8 +39,8 @@ public class DisbursementService extends
         public DisbursementService(IDisbursementRepository repository,
             IDisbursementMapper mapper, IProjectRepository projectRepository,
             ICapitalAllocationDetailRepository capitalAllocationDetailRepository,
-            MessageService messageService, GenericEntityFetcher fetcher, EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, Disbursement.class, enumRegistry);
+            MessageService messageService, GenericEntityFetcher fetcher) {
+                super(repository, mapper, messageService, Disbursement.class);
                 this.repository = repository;
                 this.capitalAllocationDetailRepository = capitalAllocationDetailRepository;
                 this.projectRepository = projectRepository;

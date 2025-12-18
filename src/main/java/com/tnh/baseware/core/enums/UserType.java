@@ -12,8 +12,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
 public enum UserType implements BaseEnum<String> {
-    COMMUNE("COMMUNE", "commune", "Cấp xã"),
-    PROVINCE("PROVINCE", "province", "Cấp tỉnh");
+    CUSTOMER("CUSTOMER", "customer", "Khách hàng"),
+    AGENT("AGENT", "agent", "Nhân viên"),
+    MANAGER("MANAGER", "manager", "Quản lý");
 
     String value;
     String name;

@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.entities.investment;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.doc.FileDocument;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @Builder
 @Entity
 @NoArgsConstructor
-@ScanableEntity(name = "OtherDecision", alias = "OtherDecision", description = "Represents an Other Decision")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OtherDecision extends Auditable<String> implements Serializable {

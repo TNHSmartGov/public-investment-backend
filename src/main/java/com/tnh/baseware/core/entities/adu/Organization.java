@@ -1,7 +1,6 @@
 package com.tnh.baseware.core.entities.adu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.user.User;
 import com.tnh.baseware.core.enums.OrganizationLevel;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @Setter
 @Builder
 @Entity
-@ScanableEntity(name = "Organization", alias = "organization", description = "Represents an organization")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -48,7 +46,6 @@ public class Organization extends Auditable<String> implements Serializable {
     String description;
     Double latitude;
     Double longitude;
-    Integer type;
 
     @Column(nullable = false)
     @Builder.Default

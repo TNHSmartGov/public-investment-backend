@@ -15,7 +15,4 @@ public interface IOrganizationRepository extends IGenericRepository<Organization
     @EntityGraph(attributePaths = {"parent"})
     @Query("SELECT o FROM Organization o")
     List<Organization> findAllWithParent();
-
-    @Query("SELECT o FROM Organization o JOIN o.users u WHERE u.id = :userId AND o.level=4")
-    List<Organization> findAllOwnersByUser(UUID userId);
 }

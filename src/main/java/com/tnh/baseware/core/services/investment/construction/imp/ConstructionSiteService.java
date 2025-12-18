@@ -5,7 +5,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.entities.investment.construction.ConstructionSite;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -44,9 +43,8 @@ public class ConstructionSiteService extends
             IProjectRepository projectRepository,
             IConstructionSiteMapper mapper,
             MessageService messageService,
-            GenericEntityFetcher fetcher,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, ConstructionSite.class, enumRegistry);
+            GenericEntityFetcher fetcher) {
+        super(repository, mapper, messageService, ConstructionSite.class);
 
         this.repository = repository;
         this.provinceRepository = provinceRepository;

@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.audit.EnumDTO;
 import com.tnh.baseware.core.entities.user.CustomUserDetails;
 import com.tnh.baseware.core.entities.user.User;
@@ -36,10 +35,8 @@ public abstract class GenericService<E, F, D, R extends IGenericRepository<E, I>
 
     R repository;
     M mapper;
-    public MessageService messageService;
-
+    MessageService messageService;
     Class<E> entityClass;
-    EnumRegistry enumRegistry;
 
     @Override
     @Transactional
@@ -82,12 +79,6 @@ public abstract class GenericService<E, F, D, R extends IGenericRepository<E, I>
     @Transactional
     public void softDeleteAllByIds(List<I> ids) {
         repository.softDeleteByIdIn(ids);
-    }
-
-    @Override
-    @Transactional
-    public void restoreEntitySoftDelete(I id) {
-        repository.restoreSoftDeleteById(id);
     }
 
     @Override
@@ -217,10 +208,9 @@ public abstract class GenericService<E, F, D, R extends IGenericRepository<E, I>
     @Transactional(readOnly = true)
     public List<? extends EnumDTO<?>> getEnumValues(String enumName) {
         try {
-            // var basePackage = "com.tnh.baseware.core.enums";
-
-            // var className = basePackage + "." + enumName;
-            var clazz = enumRegistry.findEnumClass(enumName);
+            var basePackage = "com.tnh.baseware.core.enums";
+            var className = basePackage + "." + enumName;
+            var clazz = Class.forName(className);
 
             if (!clazz.isEnum() || !BaseEnum.class.isAssignableFrom(clazz)) {
                 throw new BWCGenericRuntimeException(
@@ -247,35 +237,15 @@ public abstract class GenericService<E, F, D, R extends IGenericRepository<E, I>
         }
     }
 
-    /*@Override
+    @Override
     @Transactional(readOnly = true)
     public User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info(LogStyleHelper.info("Current authentication: {}"), auth);
 
         if (auth == null || !auth.isAuthenticated()
                 || !(auth.getPrincipal() instanceof CustomUserDetails userDetails)) {
             throw new BWCGenericRuntimeException(messageService.getMessage("user.not.authenticated"));
         }
-        return userDetails.getUser();
-    }*/
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info(LogStyleHelper.info("Current authentication: {}"), auth);
-
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new BWCGenericRuntimeException(messageService.getMessage("user.not.authenticated"));
-        }
-
-        Object principal = auth.getPrincipal();
-        if (!(principal instanceof CustomUserDetails)) {
-            throw new BWCGenericRuntimeException(messageService.getMessage("user.not.authenticated"));
-        }
-
-        CustomUserDetails userDetails = (CustomUserDetails) principal;
         return userDetails.getUser();
     }
 

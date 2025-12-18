@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.entities.investment.construction;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.doc.FileDocument;
 import com.tnh.baseware.core.entities.investment.Project;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Builder
 @Entity
 @NoArgsConstructor
-@ScanableEntity(name = "LandClearance", alias = "LandClearance", description = "Represents an Land Clearance")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LandClearance extends Auditable<String> implements Serializable {

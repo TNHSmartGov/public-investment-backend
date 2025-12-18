@@ -1,32 +1,28 @@
 package com.tnh.baseware.core.services.doc.imp;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-
-import com.tnh.baseware.core.components.TenantContext;
+import com.tnh.baseware.core.dtos.doc.FileDocumentDTO;
 import com.tnh.baseware.core.dtos.doc.FileResource;
+import com.tnh.baseware.core.entities.doc.FileDocument;
 import com.tnh.baseware.core.exceptions.BWCGenericRuntimeException;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
-import com.tnh.baseware.core.services.storage.IStorageService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import com.tnh.baseware.core.entities.doc.FileDocument;
-import com.tnh.baseware.core.components.EnumRegistry;
-import com.tnh.baseware.core.dtos.doc.FileDocumentDTO; 
 import com.tnh.baseware.core.forms.doc.FileDocumentEditorForm;
 import com.tnh.baseware.core.mappers.doc.IFileDocumentMapper;
 import com.tnh.baseware.core.repositories.doc.IFileDocumentRepository;
 import com.tnh.baseware.core.services.GenericService;
 import com.tnh.baseware.core.services.MessageService;
 import com.tnh.baseware.core.services.doc.IFileDocumentService;
-
+import com.tnh.baseware.core.services.storage.IStorageService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -40,9 +36,9 @@ public class FileDocumentService extends
 
     public FileDocumentService(IFileDocumentRepository repository,
                                IFileDocumentMapper mapper,
-                               MessageService messageService, EnumRegistry enumRegistry,
+                               MessageService messageService,
                                IStorageService<String> storageService) {
-        super(repository, mapper, messageService, FileDocument.class, enumRegistry);
+        super(repository, mapper, messageService, FileDocument.class);
         this.storageService = storageService;
     }
 
@@ -72,7 +68,7 @@ public class FileDocumentService extends
                 }
             }
             throw new BWCGenericRuntimeException(
-                    messageService.getMessage("file.upload.error", TenantContext.getTenantId()), e
+                    messageService.getMessage("file.upload.error"), e
             );
         }
     }
@@ -112,7 +108,7 @@ public class FileDocumentService extends
             }
 
             throw new BWCGenericRuntimeException(
-                    messageService.getMessage("file.batch.upload.error", TenantContext.getTenantId()), e
+                    messageService.getMessage("file.batch.upload.error"), e
             );
         }
     }
@@ -125,7 +121,7 @@ public class FileDocumentService extends
             InputStream stream = storageService.downloadFile(doc.getUrl());
             return new FileResource(stream, doc.getName(), null);
         } catch (Exception e) {
-            throw new BWCGenericRuntimeException(messageService.getMessage("file.download.error.id", id, TenantContext.getTenantId()));
+            throw new BWCGenericRuntimeException(messageService.getMessage("file.download.error.id", id));
         }
     }
 

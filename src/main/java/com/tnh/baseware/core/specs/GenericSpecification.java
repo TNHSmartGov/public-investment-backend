@@ -29,6 +29,13 @@ public class GenericSpecification<E> implements Specification<E> {
         return PageRequest.of(Objects.requireNonNullElse(page, 0), Objects.requireNonNullElse(size, 10));
     }
 
+    public static <T> Specification<T> distinct(Specification<T> specification) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return specification.toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
     @Override
     @NonNull
     public Specification<E> and(Specification<E> other) {
@@ -43,12 +50,13 @@ public class GenericSpecification<E> implements Specification<E> {
 
     @Override
     public Predicate toPredicate(@NonNull Root<E> root,
-                                 CriteriaQuery<?> query,
-                                 CriteriaBuilder cb) {
+            CriteriaQuery<?> query,
+            CriteriaBuilder cb) {
         var predicate = cb.equal(cb.literal(Boolean.TRUE), Boolean.TRUE);
 
         for (var filter : this.request.getFilters()) {
-            log.debug(LogStyleHelper.debug("Filter: {} {} {}"), filter.getKey(), filter.getOperator().toString(), filter.getValue());
+            log.debug(LogStyleHelper.debug("Filter: {} {} {}"), filter.getKey(), filter.getOperator().toString(),
+                    filter.getValue());
             predicate = filter.getOperator().build(root, cb, filter, predicate);
         }
 

@@ -1,17 +1,13 @@
 package com.tnh.baseware.core.dtos.user;
 
 import com.tnh.baseware.core.entities.audit.Identifiable;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import org.springframework.hateoas.RepresentationModel;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-
-import com.tnh.baseware.core.dtos.adu.OrganizationDTO;
 
 @Getter
 @Setter
@@ -34,11 +30,10 @@ public class UserTokenDTO extends RepresentationModel<UserTokenDTO> implements I
     Integer ial;
     Boolean enabled;
     Boolean locked;
-    LocalDateTime lockTime;
-    LocalDateTime accountExpiryDate;
+    Instant lockTime;
+    Instant accountExpiryDate;
     Integer failedLoginAttempts;
     Boolean superAdmin;
 
     List<MenuDTO> menus;
-    List<OrganizationDTO> owners;
 }

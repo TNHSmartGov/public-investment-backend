@@ -2,7 +2,6 @@ package com.tnh.baseware.core.services.investment.imp;
 
 import java.util.UUID;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.investment.InvestmentPlanDTO;
 import com.tnh.baseware.core.entities.investment.InvestmentPlan;
 import com.tnh.baseware.core.entities.investment.Project;
@@ -22,17 +21,14 @@ public class InvestmentPlanService extends GenericService<InvestmentPlan, Invest
     IInvestmentPlanRepository repository;
     IInvestmentPlanMapper mapper;
     MessageService messageService;
-    EnumRegistry enumRegistry;
 
     public InvestmentPlanService(IInvestmentPlanRepository repository,
                     IInvestmentPlanMapper mapper,
-                    MessageService messageService,
-                    EnumRegistry enumRegistry) {
-            super(repository, mapper, messageService, InvestmentPlan.class, enumRegistry);
+                    MessageService messageService) {
+            super(repository, mapper, messageService, InvestmentPlan.class);
             this.repository = repository;
             this.mapper = mapper;
             this.messageService = messageService;
-            this.enumRegistry = enumRegistry;
     }
 
     public boolean approve(UUID id) {

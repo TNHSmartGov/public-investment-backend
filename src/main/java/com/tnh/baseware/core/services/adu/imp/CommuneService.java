@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.adu.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.adu.CommuneDTO;
 import com.tnh.baseware.core.entities.adu.Commune;
 import com.tnh.baseware.core.forms.adu.CommuneEditorForm;
@@ -26,10 +25,9 @@ public class CommuneService extends
         ICommuneService {
 
     public CommuneService(ICommuneRepository repository,
-            ICommuneMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Commune.class, enumRegistry);
+                          ICommuneMapper mapper,
+                          MessageService messageService) {
+        super(repository, mapper, messageService, Commune.class);
     }
 
     @Override

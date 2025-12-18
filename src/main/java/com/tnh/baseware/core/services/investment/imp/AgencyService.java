@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.investment.AgencyDTO;
 import com.tnh.baseware.core.entities.investment.Agency;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -37,9 +36,8 @@ public class AgencyService extends
 
         public AgencyService(IAgencyRepository repository,
                         IAgencyMapper mapper,
-                        MessageService messageService,
-                        EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, Agency.class, enumRegistry);
+                        MessageService messageService) {
+                super(repository, mapper, messageService, Agency.class);
         }
 
         @Override

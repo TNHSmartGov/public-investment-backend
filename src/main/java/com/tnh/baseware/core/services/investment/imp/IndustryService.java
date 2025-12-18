@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.investment.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.investment.IndustryDTO;
 import com.tnh.baseware.core.entities.investment.Industry;
 import com.tnh.baseware.core.forms.investment.IndustryEditorForm;
@@ -23,9 +22,8 @@ public class IndustryService extends
 
     public IndustryService(IIndustryRepository repository,
             IIndustryMapper mapper,
-            EnumRegistry enumRegistry,
             MessageService messageService) {
-        super(repository, mapper, messageService, Industry.class, enumRegistry);
+        super(repository, mapper, messageService, Industry.class);
     }
 
 }

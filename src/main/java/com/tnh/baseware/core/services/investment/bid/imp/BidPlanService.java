@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.dtos.investment.bid.BidPlanDTO;
 import com.tnh.baseware.core.entities.investment.bid.BidPlan;
@@ -44,9 +43,8 @@ public class BidPlanService extends
                 IOrganizationRepository organizationRepository,  
                 IFileDocumentRepository fileDocumentRepository,
                 MessageService messageService,
-                GenericEntityFetcher fetcher,
-                EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, BidPlan.class, enumRegistry);
+                GenericEntityFetcher fetcher) {
+                super(repository, mapper, messageService, BidPlan.class);
                 this.repository = repository;
                 this.mapper = mapper;
                 this.projectRepository = projectRepository;

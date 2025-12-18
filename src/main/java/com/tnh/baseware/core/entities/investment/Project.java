@@ -1,7 +1,6 @@
 package com.tnh.baseware.core.entities.investment;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.adu.Organization;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.audit.Category;
@@ -23,7 +22,6 @@ import java.util.Set;
 import com.tnh.baseware.core.entities.investment.construction.ConstructionSite;
 import com.tnh.baseware.core.entities.investment.construction.LandClearance;
 
-@ScanableEntity
 @Getter
 @Setter
 @Builder

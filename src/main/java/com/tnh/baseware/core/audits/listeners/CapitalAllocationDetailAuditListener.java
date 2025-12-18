@@ -1,6 +1,6 @@
 package com.tnh.baseware.core.audits.listeners;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
@@ -36,7 +36,7 @@ public class CapitalAllocationDetailAuditListener {
         history.setDescription(entity.getDescription());
         history.setCreatedDate(entity.getCreatedDate());
         history.setAction(action);
-        history.setModifiedDate(LocalDateTime.now());
+        history.setModifiedDate(Instant.now());
         history.setModifiedBy(entity.getModifiedBy());
 
         // Save via Spring context

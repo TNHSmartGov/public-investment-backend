@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.tnh.baseware.core.properties.EmailProperties;
 import com.tnh.baseware.core.utils.LogStyleHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +35,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Configuration
@@ -49,7 +50,6 @@ import java.util.concurrent.Executor;
 public class ApplicationConfiguration {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     // Configurable constants for thread pool
     private static final int CORE_POOL_SIZE = 4;
@@ -65,7 +65,6 @@ public class ApplicationConfiguration {
         var registrar = new DateTimeFormatterRegistrar();
 
         registrar.setDateFormatter(DATE_FORMATTER);
-        registrar.setDateTimeFormatter(DATE_TIME_FORMATTER);
         registrar.registerFormatters(conversionService);
 
         return conversionService;
@@ -121,9 +120,8 @@ public class ApplicationConfiguration {
         log.debug(LogStyleHelper.debug("Configuring ObjectMapper with custom date/time formatting"));
         var javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DATE_FORMATTER));
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DATE_TIME_FORMATTER));
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DATE_FORMATTER));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DATE_TIME_FORMATTER));
+        // Instant serialization will default to ISO-8601 when WRITE_DATES_AS_TIMESTAMPS is disabled
 
         return builder
                 .serializationInclusion(JsonInclude.Include.NON_NULL)

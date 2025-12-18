@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -36,13 +36,13 @@ public class UserEditorForm {
     @NotBlank(message = "{phone.not.blank}")
     String phone;
 
-    @NotBlank(message = "{email.not.blank}")
     String email;
     String avatarUrl;
     String address;
-    @NotBlank(message = "{idn.not.blank}")
     String idn;
-
+    @NotNull(message = "{ignore.payment.not.null}")
+    @Schema(description = "true: user can view cams without payment, false: user must pay to view cams", defaultValue = "false")
+    Boolean ignorePayment; // user can view cams without payment
     @NotNull(message = "{ial.not.null}")
     @Schema(description = "0: level 0 identity account, 1: level 1 identity account, 2: level 2 identity account", defaultValue = "0")
     Integer ial;
@@ -50,15 +50,11 @@ public class UserEditorForm {
     @NotNull(message = "{enabled.not.null}")
     @Schema(description = "true: enabled, false: disabled", defaultValue = "true")
     Boolean enabled;
-    LocalDateTime accountExpiryDate;
+    Instant accountExpiryDate;
 
     @NotNull(message = "{role.not.null}")
     UUID role;
     @NotNull(message = "{user.type.not.null}")
     @Schema(description = "Values are retrieved from 'users/enums?name=UserType'")
     String userType;
-
-    @NotNull(message = "{can.view.all.not.null}")
-    @Schema(description = "true: can view all project; true: can view all project by owner", defaultValue = "0")
-    Boolean canViewAll;
 }

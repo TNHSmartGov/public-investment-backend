@@ -1,7 +1,6 @@
 package com.tnh.baseware.core.entities.investment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 
 import jakarta.persistence.*;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity(name = "Agency", alias = "agency", description = "Represents an agency")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Agency extends Auditable<String> implements Serializable {
 

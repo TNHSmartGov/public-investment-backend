@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.audit.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.audit.CategoryDTO;
 import com.tnh.baseware.core.entities.audit.Category;
 import com.tnh.baseware.core.forms.audit.CategoryEditorForm;
@@ -23,9 +22,8 @@ public class CategoryService extends
         ICategoryService {
 
     public CategoryService(ICategoryRepository repository,
-            ICategoryMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Category.class, enumRegistry);
+                           ICategoryMapper mapper,
+                           MessageService messageService) {
+        super(repository, mapper, messageService, Category.class);
     }
 }

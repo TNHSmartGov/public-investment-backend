@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.audits.listeners.CapitalAllocationAuditListener;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.investment.Project;
@@ -39,7 +38,6 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(CapitalAllocationAuditListener.class)
 public class CapitalAllocation extends Auditable<String> implements Serializable {

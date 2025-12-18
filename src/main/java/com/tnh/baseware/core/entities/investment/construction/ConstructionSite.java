@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.entities.investment.construction;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.adu.Commune;
 import com.tnh.baseware.core.entities.adu.Province;
 import com.tnh.baseware.core.entities.audit.Auditable;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity(name = "ConstructionSite", alias = "ConstructionSite", description = "Represents an Construction Site")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConstructionSite extends Auditable<String> implements Serializable {
 

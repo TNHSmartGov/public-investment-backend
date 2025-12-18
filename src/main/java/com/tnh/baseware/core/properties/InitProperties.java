@@ -16,16 +16,6 @@ public class InitProperties {
 
     List<RoleInfo> roles;
     List<UserInfo> users;
-    List<TenantInfo> tenants;
-
-    @Getter
-    @Setter
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class TenantInfo {
-        String name;
-        String schemaName;
-        String createdBy;
-    }
 
     @Getter
     @Setter
@@ -51,6 +41,5 @@ public class InitProperties {
         int ial;
         boolean enabled;
         String role;
-        boolean superadmin;
     }
 }

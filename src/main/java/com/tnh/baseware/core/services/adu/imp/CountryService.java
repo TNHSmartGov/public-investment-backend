@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.adu.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.adu.CountryDTO;
 import com.tnh.baseware.core.entities.adu.Country;
 import com.tnh.baseware.core.forms.adu.CountryEditorForm;
@@ -23,9 +22,8 @@ public class CountryService extends
         ICountryService {
 
     public CountryService(ICountryRepository repository,
-            ICountryMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Country.class, enumRegistry);
+                          ICountryMapper mapper,
+                          MessageService messageService) {
+        super(repository, mapper, messageService, Country.class);
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -54,13 +54,17 @@ public class User extends Auditable<String> implements Serializable {
     @Column(unique = true, nullable = false)
     String phone;
 
-    @Column(unique = true)
+    @Column(unique = false)
     String email;
     String avatarUrl;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = false, nullable = true)
     @Builder.Default
     String idn = "";
+
+    @Column(nullable = false)
+    @Builder.Default
+    Boolean ignorePayment = Boolean.FALSE; // user can view cams without payment
 
     @Column(nullable = false)
     @Builder.Default
@@ -74,8 +78,8 @@ public class User extends Auditable<String> implements Serializable {
     @Builder.Default
     Boolean locked = Boolean.FALSE;
 
-    LocalDateTime lockTime;
-    LocalDateTime accountExpiryDate;
+    Instant lockTime;
+    Instant accountExpiryDate;
     String address;
     @Column(nullable = false)
     @Builder.Default
@@ -86,11 +90,7 @@ public class User extends Auditable<String> implements Serializable {
     Boolean superAdmin = Boolean.FALSE;
 
     @Builder.Default
-    String userType = UserType.COMMUNE.getValue();
-
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    @Builder.Default
-    Boolean canViewAll = Boolean.FALSE;
+    String userType = UserType.CUSTOMER.getValue();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

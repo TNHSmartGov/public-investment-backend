@@ -11,12 +11,12 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Order(3)
 @ConditionalOnProperty(name = "baseware.core.system.initialized-enabled", havingValue = "true")
 public class DataInitializer implements CommandLineRunner {
 
@@ -75,8 +74,7 @@ public class DataInitializer implements CommandLineRunner {
                 .filter(u -> !existingUsernames.contains(u.getUsername()))
                 .map(u -> {
                     List<Role> roles = roleRepository.findAllByField("name", u.getRole());
-                    if (roles.isEmpty())
-                        return null;
+                    if (roles.isEmpty()) return null;
                     return User.builder()
                             .username(u.getUsername())
                             .password(passwordEncoder.encode(u.getPassword()))
@@ -90,10 +88,10 @@ public class DataInitializer implements CommandLineRunner {
                             .ial(u.getIal())
                             .enabled(u.isEnabled())
                             .locked(false)
-                            .accountExpiryDate(LocalDateTime.now().plusYears(1))
+                            .accountExpiryDate(Instant.now().plus(365, ChronoUnit.DAYS))
                             .failedLoginAttempts(0)
                             .roles(Set.of(roles.getFirst()))
-                            .superAdmin(u.isSuperadmin())
+                            .superAdmin(false)
                             .build();
                 })
                 .filter(Objects::nonNull)

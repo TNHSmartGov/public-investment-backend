@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalAllocationDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalAllocation;
@@ -46,10 +45,9 @@ public class CapitalAllocationService extends
             ICapitalAllocationMapper mapper,
             ICapitalPlanLineRepository capitalPlanLineRepository,
             ICapitalRepository capitalRepository,
-            EnumRegistry enumRegistry,
             IProjectRepository projectRepository,
             MessageService messageService, GenericEntityFetcher fetcher) {
-        super(repository, mapper, messageService, CapitalAllocation.class, enumRegistry);
+        super(repository, mapper, messageService, CapitalAllocation.class);
         this.repository = repository;
         this.capitalPlanLineRepository = capitalPlanLineRepository;
         this.projectRepository = projectRepository;

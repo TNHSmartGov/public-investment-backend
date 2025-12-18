@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.audit.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.audit.TrackActivityDTO;
 import com.tnh.baseware.core.dtos.audit.TrackActivityDetailDTO;
 import com.tnh.baseware.core.entities.audit.TrackActivity;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -31,11 +30,10 @@ public class TrackActivityService extends
     SecurityProperties securityProperties;
 
     public TrackActivityService(ITrackActivityRepository repository,
-            ITrackActivityMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry,
-            SecurityProperties securityProperties) {
-        super(repository, mapper, messageService, TrackActivity.class, enumRegistry);
+                                ITrackActivityMapper mapper,
+                                MessageService messageService,
+                                SecurityProperties securityProperties) {
+        super(repository, mapper, messageService, TrackActivity.class);
         this.securityProperties = securityProperties;
     }
 
@@ -43,7 +41,8 @@ public class TrackActivityService extends
     @Transactional(readOnly = true)
     public TrackActivityDetailDTO getTrackActivityDetail(UUID id) {
         return repository.getTrackActivityDetail(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("track.activity.not.found", id)));
+                .orElseThrow(() ->
+                        new BWCNotFoundException(messageService.getMessage("track.activity.not.found", id)));
     }
 
     @Override
@@ -56,7 +55,7 @@ public class TrackActivityService extends
                 .ipAddress(ip)
                 .deviceInfo(device)
                 .username(username)
-                .actionDate(LocalDateTime.now())
+                .actionDate(Instant.now())
                 .responsePayload(messageService.getMessage("track.activity.login"))
                 .build();
 
@@ -73,7 +72,7 @@ public class TrackActivityService extends
                 .ipAddress(ip)
                 .deviceInfo(device)
                 .username(username)
-                .actionDate(LocalDateTime.now())
+                .actionDate(Instant.now())
                 .responsePayload(messageService.getMessage("track.activity.logout"))
                 .build();
 
@@ -90,7 +89,7 @@ public class TrackActivityService extends
                 .ipAddress(ip)
                 .deviceInfo(device)
                 .username(username)
-                .actionDate(LocalDateTime.now())
+                .actionDate(Instant.now())
                 .responsePayload(messageService.getMessage("track.activity.refresh.token"))
                 .build();
 

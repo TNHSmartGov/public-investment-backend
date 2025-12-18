@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 public enum AlertChannel implements BaseEnum<String> {
 
     EMAIL("EMAIL", "Email", "Email"),
-    NOTIFICATION("NOTIFICATION", "Notification", "Thông báo"),
     SYSTEM_LOG("SYSTEM_LOG", "System Log", "Nhật ký hệ thống"),
     TELEGRAM("TELEGRAM", "Telegram", "Telegram"),
     ZALO("ZALO", "Zalo", "Zalo");

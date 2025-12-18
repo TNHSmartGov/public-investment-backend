@@ -2,7 +2,6 @@ package com.tnh.baseware.core.services.investment.progress.imp;
 
 import org.springframework.stereotype.Service;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
 import com.tnh.baseware.core.dtos.investment.progress.AllocationExecutionDTO;
@@ -40,8 +39,8 @@ public class AllocationExecutionService extends
         public AllocationExecutionService(IAllocationExecutionRepository repository,
             IAllocationExecutionMapper mapper,
             ICapitalAllocationDetailRepository capitalAllocationDetailRepository, IProjectRepository projectRepository,
-            MessageService messageService, GenericEntityFetcher fetcher, EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, AllocationExecution.class, enumRegistry);
+            MessageService messageService, GenericEntityFetcher fetcher) {
+                super(repository, mapper, messageService, AllocationExecution.class);
                 this.repository = repository;
                 this.capitalAllocationDetailRepository = capitalAllocationDetailRepository;
                 this.projectRepository = projectRepository;

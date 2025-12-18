@@ -39,7 +39,7 @@ import java.util.UUID;
 @Getter
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract class GenericResource<E, F, D extends RepresentationModel<D> & Identifiable<UUID>, I>
+public abstract class GenericResource<E, F, D extends RepresentationModel<D> & Identifiable<I>, I>
                 implements IGenericResource<E, F, D, I> {
 
         IGenericService<E, F, D, I> service;
@@ -113,21 +113,6 @@ public abstract class GenericResource<E, F, D extends RepresentationModel<D> & I
                                 .data(1)
                                 .result(true)
                                 .message(messageService.getMessage("entity.soft.deleted"))
-                                .code(HttpStatus.OK.value())
-                                .build());
-        }
-
-        @Operation(summary = "Restore entity soft delete")
-        @ApiResponse(responseCode = "200", description = "Entity soft deleted", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiMessageDTO.class)))
-        @Override
-        @PutMapping("/restore-soft-delete/{id}")
-        public ResponseEntity<ApiMessageDTO<Integer>> restoreEntitySoftDelete(@PathVariable I id) {
-                service.restoreEntitySoftDelete(id);
-
-                return ResponseEntity.ok(ApiMessageDTO.<Integer>builder()
-                                .data(1)
-                                .result(true)
-                                .message(messageService.getMessage("entity.restored"))
                                 .code(HttpStatus.OK.value())
                                 .build());
         }

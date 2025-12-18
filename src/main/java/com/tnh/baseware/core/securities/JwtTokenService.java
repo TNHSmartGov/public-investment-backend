@@ -28,9 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.KeyGenerator;
 import java.text.ParseException;
-import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -59,10 +57,6 @@ public class JwtTokenService {
         }
     }
 
-    public Optional<String> extractTenantId(String token) {
-        return extractClaim(token, claims -> claims.getClaim("t").toString());
-    }
-
     public Optional<String> extractSessionId(String token) {
         return extractClaim(token, claims -> claims.getClaim("sid").toString());
     }
@@ -85,19 +79,19 @@ public class JwtTokenService {
         }
     }
 
-    public Optional<String> generateToken(CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId, String tenantName) {
-        return generateToken(new HashMap<>(), userDetails, request, sessionId, tenantName);
+    public Optional<String> generateToken(CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId) {
+        return generateToken(new HashMap<>(), userDetails, request, sessionId);
     }
 
-    private Optional<String> generateToken(Map<String, Object> extraClaims, CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId, String tenantName) {
-        return buildToken(extraClaims, userDetails, securityProperties.getJwt().getExpiration(), TokenType.ACCESS.getValue(), request, sessionId, tenantName);
+    private Optional<String> generateToken(Map<String, Object> extraClaims, CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId) {
+        return buildToken(extraClaims, userDetails, securityProperties.getJwt().getExpiration(), TokenType.ACCESS.getValue(), request, sessionId);
     }
 
-    public Optional<String> generateRefreshToken(CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId, String tenantName) {
-        return buildToken(new HashMap<>(), userDetails, securityProperties.getJwt().getRefreshExpiration(), TokenType.REFRESH.getValue(), request, sessionId, tenantName);
+    public Optional<String> generateRefreshToken(CustomUserDetails userDetails, HttpServletRequest request, UUID sessionId) {
+        return buildToken(new HashMap<>(), userDetails, securityProperties.getJwt().getRefreshExpiration(), TokenType.REFRESH.getValue(), request, sessionId);
     }
 
-    private Optional<String> buildToken(Map<String, Object> extraClaims, CustomUserDetails userDetails, long expiration, String tokenType, HttpServletRequest request, UUID sessionId, String tenantName) {
+    private Optional<String> buildToken(Map<String, Object> extraClaims, CustomUserDetails userDetails, long expiration, String tokenType, HttpServletRequest request, UUID sessionId) {
         try {
             var header = new JWSHeader(JWSAlgorithm.HS512);
             var ip = request.getRemoteAddr();
@@ -109,8 +103,7 @@ public class JwtTokenService {
                     .issueTime(new Date())
                     .expirationTime(Date.from(Instant.now().plusMillis(expiration)))
                     .jwtID(UUID.randomUUID().toString())
-                    .claim("sid", String.valueOf(sessionId))
-                    .claim("t", tenantName);
+                    .claim("sid", String.valueOf(sessionId));
             extraClaims.forEach(claimsBuilder::claim);
 
             var claimsSet = claimsBuilder.build();
@@ -129,7 +122,7 @@ public class JwtTokenService {
                     .revoked(false)
                     .expired(false)
                     .user(userDetails.getUser())
-                    .expiration(LocalDateTime.now().plus(Duration.ofMillis(expiration)))
+                    .expiration(Instant.now().plusMillis(expiration))
                     .build();
             tokenRepository.save(token);
             return signedJWT.serialize().describeConstable();

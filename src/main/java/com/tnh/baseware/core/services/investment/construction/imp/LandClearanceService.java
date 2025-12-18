@@ -5,7 +5,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.entities.investment.construction.LandClearance;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -35,20 +34,18 @@ public class LandClearanceService extends
     ILandClearanceMapper mapper;
     GenericEntityFetcher fetcher;
     MessageService messageService;
-    EnumRegistry enumRegistry;
 
     public LandClearanceService(ILandClearanceRepository repository,
             ILandClearanceMapper mapper,
             IProjectRepository projectRepository,
             IFileDocumentRepository fileDocumentRepository,            
-            MessageService messageService, GenericEntityFetcher fetcher, EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, LandClearance.class, enumRegistry);
+            MessageService messageService, GenericEntityFetcher fetcher) {
+        super(repository, mapper, messageService, LandClearance.class);
         this.repository = repository;
         this.projectRepository = projectRepository;
         this.fileDocumentRepository = fileDocumentRepository;
         this.mapper = mapper;
         this.messageService = messageService;
-        this.enumRegistry = enumRegistry;
         this.fetcher = fetcher;
     }
 

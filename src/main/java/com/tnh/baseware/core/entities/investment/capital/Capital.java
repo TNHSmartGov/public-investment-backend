@@ -1,7 +1,6 @@
 package com.tnh.baseware.core.entities.investment.capital;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 
 import jakarta.persistence.*;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ScanableEntity(name="Capital", alias="capital", description="Represents a capital source")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 //Nguồn vốn
 public class Capital extends Auditable<String> implements Serializable {

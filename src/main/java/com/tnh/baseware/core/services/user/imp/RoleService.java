@@ -1,7 +1,5 @@
 package com.tnh.baseware.core.services.user.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
-import com.tnh.baseware.core.components.TenantContext;
 import com.tnh.baseware.core.dtos.user.RoleDTO;
 import com.tnh.baseware.core.entities.user.Role;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -26,166 +24,152 @@ import java.util.UUID;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class RoleService extends GenericService<Role, RoleEditorForm, RoleDTO, IRoleRepository, IRoleMapper, UUID>
-                implements IRoleService {
+public class RoleService extends GenericService<Role, RoleEditorForm, RoleDTO, IRoleRepository, IRoleMapper, UUID> implements IRoleService {
 
-        IMenuRepository menuRepository;
-        IUserRepository userRepository;
-        IPrivilegeRepository privilegeRepository;
-        PrivilegeCacheService privilegeCacheService;
+    IMenuRepository menuRepository;
+    IUserRepository userRepository;
+    IPrivilegeRepository privilegeRepository;
+    PrivilegeCacheService privilegeCacheService;
 
-        public RoleService(IRoleRepository repository,
-                        IRoleMapper mapper,
-                        MessageService messageService,
-                        IMenuRepository menuRepository,
-                        IUserRepository userRepository,
-                        EnumRegistry enumRegistry,
-                        IPrivilegeRepository privilegeRepository,
-                        PrivilegeCacheService privilegeCacheService) {
-                super(repository, mapper, messageService, Role.class, enumRegistry);
-                this.menuRepository = menuRepository;
-                this.userRepository = userRepository;
-                this.privilegeRepository = privilegeRepository;
-                this.privilegeCacheService = privilegeCacheService;
-        }
+    public RoleService(IRoleRepository repository,
+                       IRoleMapper mapper,
+                       MessageService messageService,
+                       IMenuRepository menuRepository,
+                       IUserRepository userRepository,
+                       IPrivilegeRepository privilegeRepository,
+                       PrivilegeCacheService privilegeCacheService) {
+        super(repository, mapper, messageService, Role.class);
+        this.menuRepository = menuRepository;
+        this.userRepository = userRepository;
+        this.privilegeRepository = privilegeRepository;
+        this.privilegeCacheService = privilegeCacheService;
+    }
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void delete(UUID id) {
-                var role = repository.findById(id).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
-                repository.delete(role);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void assignUsers(UUID roleId, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void delete(UUID id) {
+        var role = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        repository.delete(role);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(roleId).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
-                var users = userRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void assignUsers(UUID roleId, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(users))
-                        return;
-                users.forEach(user -> user.getRoles().add(role));
+        var role = repository.findById(roleId).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
+        var users = userRepository.findAllById(ids);
 
-                userRepository.saveAll(users);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(users)) return;
+        users.forEach(user -> user.getRoles().add(role));
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void removeUsers(UUID roleId, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+        userRepository.saveAll(users);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(roleId).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
-                var users = userRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeUsers(UUID roleId, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(users))
-                        return;
-                users.forEach(user -> user.getRoles().remove(role));
+        var role = repository.findById(roleId).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
+        var users = userRepository.findAllById(ids);
 
-                userRepository.saveAll(users);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(users)) return;
+        users.forEach(user -> user.getRoles().remove(role));
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void assignPrivileges(UUID roleId, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+        userRepository.saveAll(users);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(roleId).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
-                var privileges = privilegeRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void assignPrivileges(UUID roleId, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(privileges))
-                        return;
-                role.getPrivileges().addAll(privileges);
+        var role = repository.findById(roleId).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
+        var privileges = privilegeRepository.findAllById(ids);
 
-                repository.save(role);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(privileges)) return;
+        role.getPrivileges().addAll(privileges);
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void removePrivileges(UUID roleId, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+        repository.save(role);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(roleId).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
-                var privileges = privilegeRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removePrivileges(UUID roleId, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(privileges))
-                        return;
-                privileges.forEach(role.getPrivileges()::remove);
+        var role = repository.findById(roleId).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", roleId)));
+        var privileges = privilegeRepository.findAllById(ids);
 
-                repository.save(role);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(privileges)) return;
+        privileges.forEach(role.getPrivileges()::remove);
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void assignMenus(UUID id, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+        repository.save(role);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(id).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
-                var menus = menuRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void assignMenus(UUID id, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(menus))
-                        return;
-                menus.forEach(menu -> menu.getRoles().add(role));
+        var role = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        var menus = menuRepository.findAllById(ids);
 
-                menuRepository.saveAll(menus);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(menus)) return;
+        menus.forEach(menu -> menu.getRoles().add(role));
 
-        @Override
-        @Transactional(isolation = Isolation.READ_COMMITTED)
-        public void removeMenus(UUID id, List<UUID> ids) {
-                if (BasewareUtils.isBlank(ids))
-                        return;
+        menuRepository.saveAll(menus);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-                var role = repository.findById(id).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
-                var menus = menuRepository.findAllById(ids);
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeMenus(UUID id, List<UUID> ids) {
+        if (BasewareUtils.isBlank(ids)) return;
 
-                if (BasewareUtils.isBlank(menus))
-                        return;
-                menus.forEach(menu -> menu.getRoles().remove(role));
+        var role = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        var menus = menuRepository.findAllById(ids);
 
-                menuRepository.saveAll(menus);
-                privilegeCacheService.invalidateAllUserPrivilegesByRole(TenantContext.getTenantId(), role);
-        }
+        if (BasewareUtils.isBlank(menus)) return;
+        menus.forEach(menu -> menu.getRoles().remove(role));
 
-        @Override
-        @Transactional(readOnly = true)
-        public List<RoleDTO> findAllByMenu(UUID menuId) {
-                var menu = menuRepository.findById(menuId).orElseThrow(
-                                () -> new BWCNotFoundException(messageService.getMessage("menu.not.found", menuId)));
-                return repository.findAllByEntitiesContaining("menus", menu)
-                                .stream()
-                                .map(mapper::entityToDTO)
-                                .toList();
-        }
+        menuRepository.saveAll(menus);
+        privilegeCacheService.invalidateAllUserPrivilegesByRole(role);
+    }
 
-        @Override
-        @Transactional(readOnly = true)
-        public List<RoleDTO> findAllByPrivilege(UUID privilegeId) {
-                var privilege = privilegeRepository.findById(privilegeId)
-                                .orElseThrow(() -> new BWCNotFoundException(
-                                                messageService.getMessage("privilege.not.found", privilegeId)));
-                return repository.findAllByEntitiesContaining("privileges", privilege)
-                                .stream()
-                                .map(mapper::entityToDTO)
-                                .toList();
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoleDTO> findAllByMenu(UUID menuId) {
+        var menu = menuRepository.findById(menuId).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("menu.not.found", menuId)));
+        return repository.findAllByEntitiesContaining("menus", menu)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoleDTO> findAllByPrivilege(UUID privilegeId) {
+        var privilege = privilegeRepository.findById(privilegeId)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("privilege.not.found", privilegeId)));
+        return repository.findAllByEntitiesContaining("privileges", privilege)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
 }

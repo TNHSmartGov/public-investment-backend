@@ -41,7 +41,7 @@ public class CapitalAllocationDetailService extends
     public CapitalAllocationDetailService(ICapitalAllocationDetailRepository repository,
             ICapitalAllocationDetailMapper mapper, ICapitalAllocationRepository capitalAlloCationRepository,
             MessageService messageService, GenericEntityFetcher fetcher) {
-        super(repository, mapper, messageService, CapitalAllocationDetail.class, null);
+        super(repository, mapper, messageService, CapitalAllocationDetail.class);
         this.repository = repository;
         this.capitalAlloCationRepository = capitalAlloCationRepository;
         this.fetcher = fetcher;

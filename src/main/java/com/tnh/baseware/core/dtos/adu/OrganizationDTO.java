@@ -31,7 +31,6 @@ public class OrganizationDTO extends RepresentationModel<OrganizationDTO> implem
     Double latitude;
     Double longitude;
     Integer level;
-    Integer type;
 
     OrganizationDTO parent;
     List<OrganizationDTO> children;

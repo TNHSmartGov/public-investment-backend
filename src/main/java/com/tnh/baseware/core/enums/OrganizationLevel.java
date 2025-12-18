@@ -17,7 +17,7 @@ public enum OrganizationLevel implements BaseEnum<Integer> {
     OWNER(4, "owner", "Chủ đầu tư"),
     PMU(5, "pmu", "Ban QLDA"),
     ADM(6, "adm", "Địa bàn chính");
-    
+
     Integer value;
     String name;
     String displayName;

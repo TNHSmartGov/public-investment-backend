@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.entities.adu;
 
-import com.tnh.baseware.core.annotations.ScanableEntity;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Builder
 @Entity
 @NoArgsConstructor
-@ScanableEntity(name = "Commune", alias = "commune", description = "Represents a commune")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Commune extends Auditable<String> implements Serializable {

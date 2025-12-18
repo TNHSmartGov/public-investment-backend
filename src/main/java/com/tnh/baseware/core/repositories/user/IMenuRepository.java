@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface IMenuRepository extends IGenericRepository<Menu, UUID> {
 
-    @EntityGraph(attributePaths = { "parent" })
-    @Query("SELECT m FROM Menu m WHERE m.parent IS NULL order by m.menuOrder ASC ")
+    @EntityGraph(attributePaths = {"parent"})
+    @Query("SELECT m FROM Menu m")
     List<Menu> findAllWithParent();
 }

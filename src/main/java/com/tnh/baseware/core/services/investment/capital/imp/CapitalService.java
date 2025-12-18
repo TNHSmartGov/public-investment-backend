@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.investment.capital.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalDTO;
 import com.tnh.baseware.core.entities.investment.capital.Capital;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -37,9 +36,8 @@ public class CapitalService extends
 
         public CapitalService(ICapitalRepository repository,
                         ICapitalMapper mapper,
-                        MessageService messageService,
-                        EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, Capital.class, enumRegistry);
+                        MessageService messageService) {
+                super(repository, mapper, messageService, Capital.class);
         }
 
         @Override

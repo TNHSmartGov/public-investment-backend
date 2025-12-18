@@ -19,5 +19,5 @@ public class FileDocumentEditorForm {
     String fileName;
 
     String description;
-    
+
 }

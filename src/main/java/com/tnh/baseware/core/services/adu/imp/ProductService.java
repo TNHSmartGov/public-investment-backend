@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.adu.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.adu.ProductDTO;
 import com.tnh.baseware.core.entities.adu.Product;
 import com.tnh.baseware.core.forms.adu.ProductEditorForm;
@@ -22,9 +21,8 @@ public class ProductService extends
         IProductService {
 
     public ProductService(IProductRepository repository,
-            IProductMapper mapper,
-            MessageService messageService,
-            EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, Product.class, enumRegistry);
+                          IProductMapper mapper,
+                          MessageService messageService) {
+        super(repository, mapper, messageService, Product.class);
     }
 }

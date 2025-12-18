@@ -1,6 +1,6 @@
 package com.tnh.baseware.core.audits.listeners;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
@@ -34,7 +34,7 @@ public class AllocationExecutionAuditListener {
         history.setDescription(entity.getDescription());
         history.setCreatedDate(entity.getCreatedDate());
         history.setResponsiblePerson(entity.getResponsiblePerson());
-        history.setModifiedDate(LocalDateTime.now());
+        history.setModifiedDate(Instant.now());
         history.setModifiedBy(entity.getModifiedBy());
         history.setAction(action);
         history.setExecutionDate(entity.getExecutionDate());

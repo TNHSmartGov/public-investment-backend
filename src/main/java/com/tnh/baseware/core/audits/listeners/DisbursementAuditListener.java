@@ -1,5 +1,6 @@
 package com.tnh.baseware.core.audits.listeners;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
@@ -34,7 +35,7 @@ public class DisbursementAuditListener {
         history.setDescription(entity.getDescription());
         history.setCreatedDate(entity.getCreatedDate());
         history.setResponsiblePerson(entity.getResponsiblePerson());
-        history.setModifiedDate(LocalDateTime.now());
+        history.setModifiedDate(Instant.now());
         history.setModifiedBy(entity.getModifiedBy());
         history.setAction(action);
         history.setDisbursementDate(entity.getDisbursementDate());

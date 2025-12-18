@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.services.investment.capital.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalPlanDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlan;
 import com.tnh.baseware.core.forms.investment.CapitalPlanEditorForm;
@@ -23,9 +22,8 @@ public class CapitalPlanService extends
         ICapitalPlanService {
 
     public CapitalPlanService(ICapitalPlanRepository repository,
-            EnumRegistry enumRegistry,
             ICapitalPlanMapper mapper,
             MessageService messageService) {
-        super(repository, mapper, messageService, CapitalPlan.class, enumRegistry);
+        super(repository, mapper, messageService, CapitalPlan.class);
     }
 }

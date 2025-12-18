@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.dtos.investment.OtherDecisionDTO;
 import com.tnh.baseware.core.entities.investment.OtherDecision;
@@ -42,8 +41,8 @@ public class OtherDecisionService extends
                           IProjectRepository projectRepository,
                           IOrganizationRepository organizationRepository,  
                           IFileDocumentRepository fileDocumentRepository,                    
-                          MessageService messageService, GenericEntityFetcher fetcher, EnumRegistry enumRegistry) {
-        super(repository, mapper, messageService, OtherDecision.class, enumRegistry);        
+                          MessageService messageService, GenericEntityFetcher fetcher) {
+        super(repository, mapper, messageService, OtherDecision.class);        
         this.repository = repository;
         this.projectRepository = projectRepository;
         this.organizationRepository = organizationRepository;

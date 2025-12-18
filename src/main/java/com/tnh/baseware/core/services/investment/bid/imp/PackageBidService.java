@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tnh.baseware.core.components.EnumRegistry;
 import com.tnh.baseware.core.components.GenericEntityFetcher;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
 
@@ -43,9 +42,8 @@ public class PackageBidService extends
                 IProjectRepository projectRepository,
                 ICategoryRepository categoryRepository,  
                 MessageService messageService,
-                GenericEntityFetcher fetcher,
-                EnumRegistry enumRegistry) {
-                super(repository, mapper, messageService, PackageBid.class, enumRegistry);
+                GenericEntityFetcher fetcher) {
+                super(repository, mapper, messageService, PackageBid.class);
                 this.repository = repository;
                 this.mapper = mapper;
                 this.projectRepository = projectRepository;

@@ -79,7 +79,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(bypassUrls).permitAll()
                         .anyRequest().authenticated())
-                .addFilterAfter(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(customAuthorizationFilter, JwtAuthenticationFilter.class)
                 .addFilterAfter(trackActivityFilter, CustomAuthorizationFilter.class)
                 .logout(logout -> logout

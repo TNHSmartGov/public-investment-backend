@@ -1,7 +1,5 @@
 package com.tnh.baseware.core.services.user.imp;
 
-import com.tnh.baseware.core.components.EnumRegistry;
-import com.tnh.baseware.core.components.TenantContext;
 import com.tnh.baseware.core.dtos.user.PrivilegeDTO;
 import com.tnh.baseware.core.entities.user.Privilege;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
@@ -27,24 +25,19 @@ import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class PrivilegeService extends
-        GenericService<Privilege, PrivilegeEditorForm, PrivilegeDTO, IPrivilegeRepository, IPrivilegeMapper, UUID>
-        implements IPrivilegesService {
+public class PrivilegeService extends GenericService<Privilege, PrivilegeEditorForm, PrivilegeDTO, IPrivilegeRepository, IPrivilegeMapper, UUID> implements IPrivilegesService {
 
     PrivilegeCacheService privilegeCacheService;
     IRoleRepository roleRepository;
     IPrivilegeMapper privilegeMapper;
 
     public PrivilegeService(IPrivilegeRepository repository,
-
-            IPrivilegeMapper mapper,
-
-            MessageService messageService,
-            EnumRegistry enumRegistry,
-            PrivilegeCacheService privilegeCacheService,
-            IRoleRepository roleRepository,
-            IPrivilegeMapper privilegeMapper) {
-        super(repository, mapper, messageService, Privilege.class, enumRegistry);
+                            IPrivilegeMapper mapper,
+                            MessageService messageService,
+                            PrivilegeCacheService privilegeCacheService,
+                            IRoleRepository roleRepository,
+                            IPrivilegeMapper privilegeMapper) {
+        super(repository, mapper, messageService, Privilege.class);
         this.privilegeCacheService = privilegeCacheService;
         this.roleRepository = roleRepository;
         this.privilegeMapper = privilegeMapper;
@@ -53,12 +46,12 @@ public class PrivilegeService extends
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public PrivilegeDTO update(UUID id, PrivilegeEditorForm form) {
-        var privilege = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("privilege.not.found", id)));
+        var privilege = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("privilege.not.found", id)));
         mapper.formToEntity(form, privilege);
 
         var privilegeNew = repository.save(privilege);
-        privilegeCacheService.invalidatePrivilegeCache(TenantContext.getTenantId(), privilege);
+        privilegeCacheService.invalidatePrivilegeCache(privilege);
 
         return mapper.entityToDTO(privilegeNew);
     }
@@ -66,11 +59,11 @@ public class PrivilegeService extends
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void delete(UUID id) {
-        var privilege = repository.findById(id)
-                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("privilege.not.found", id)));
+        var privilege = repository.findById(id).orElseThrow(() ->
+                new BWCNotFoundException(messageService.getMessage("privilege.not.found", id)));
         repository.delete(privilege);
 
-        privilegeCacheService.invalidatePrivilegeCache(TenantContext.getTenantId(), privilege);
+        privilegeCacheService.invalidatePrivilegeCache(privilege);
     }
 
     @Override
