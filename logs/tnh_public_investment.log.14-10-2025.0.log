@@ -1,0 +1,29 @@
+14-10-2025 09:39:08.051 [SpringApplicationShutdownHook] DEBUG o.s.b.a.ApplicationAvailabilityBean.onApplicationEvent - Application availability state ReadinessState changed from ACCEPTING_TRAFFIC to REFUSING_TRAFFIC
+14-10-2025 09:39:08.060 [SpringApplicationShutdownHook] DEBUG o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext.doClose - Closing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1eef9aef, started on Mon Oct 13 16:28:15 ICT 2025
+14-10-2025 09:39:08.071 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase 2147482623
+14-10-2025 09:39:08.074 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown.shutDownGracefully - Commencing graceful shutdown. Waiting for active requests to complete
+14-10-2025 09:39:08.078 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown.doShutdown - Graceful shutdown complete
+14-10-2025 09:39:08.078 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase 2147481599
+14-10-2025 09:39:08.081 [tomcat-shutdown] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'webServerGracefulShutdown' completed its stop procedure
+14-10-2025 09:39:08.102 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'webServerStartStop' completed its stop procedure
+14-10-2025 09:39:08.103 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase 1073741823
+14-10-2025 09:39:08.103 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'taskExecutor' completed its stop procedure
+14-10-2025 09:39:08.103 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'executor' completed its stop procedure
+14-10-2025 09:39:08.104 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'taskScheduler' completed its stop procedure
+14-10-2025 09:39:08.104 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase 1
+14-10-2025 09:39:08.104 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'webClientHttpConnector' completed its stop procedure
+14-10-2025 09:39:08.104 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase 0
+14-10-2025 09:39:08.115 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'redisConnectionFactory' completed its stop procedure
+14-10-2025 09:39:10.183 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'reactorResourceFactory' completed its stop procedure
+14-10-2025 09:39:10.184 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.stop - Stopping beans in phase -2147483647
+14-10-2025 09:39:10.184 [SpringApplicationShutdownHook] DEBUG o.s.c.s.DefaultLifecycleProcessor.lambda$doStop$5 - Bean 'springBootLoggingLifecycle' completed its stop procedure
+14-10-2025 09:39:10.193 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler.shutdown - Shutting down ExecutorService 'taskScheduler'
+14-10-2025 09:39:10.198 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor.shutdown - Shutting down ExecutorService 'executor'
+14-10-2025 09:39:10.199 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor.shutdown - Shutting down ExecutorService 'taskExecutor'
+14-10-2025 09:39:10.203 [SpringApplicationShutdownHook] INFO  c.t.b.c.configs.AsyncConfiguration.shutdownExecutor - ✅ Shutting down Async Executor...
+14-10-2025 09:39:10.204 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor.shutdown - Shutting down ExecutorService 'executor'
+14-10-2025 09:39:10.204 [SpringApplicationShutdownHook] INFO  c.t.b.c.configs.AsyncConfiguration.shutdownExecutor - ✅ Async Executor shutdown completed
+14-10-2025 09:39:10.215 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close - HikariPool-1 - Shutdown initiated...
+14-10-2025 09:39:10.223 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource.close - HikariPool-1 - Shutdown completed.
+14-10-2025 09:39:10.231 [SpringApplicationShutdownHook] DEBUG o.s.b.f.s.DisposableBeanAdapter.logDestroyMethodCompletion - Custom destroy method 'shutdown' on bean with name 'clientResources' completed asynchronously
+14-10-2025 09:39:10.232 [SpringApplicationShutdownHook] DEBUG o.s.b.f.s.DisposableBeanAdapter.logDestroyMethodCompletion - Custom destroy method 'close' on bean with name 'simpleMeterRegistry' completed

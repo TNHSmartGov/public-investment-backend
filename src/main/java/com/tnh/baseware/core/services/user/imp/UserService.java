@@ -1,0 +1,404 @@
+package com.tnh.baseware.core.services.user.imp;
+
+import com.tnh.baseware.core.components.EnumRegistry;
+import com.tnh.baseware.core.components.GenericEntityFetcher;
+import com.tnh.baseware.core.components.TenantContext;
+import com.tnh.baseware.core.dtos.user.TenantContextDTO;
+import com.tnh.baseware.core.dtos.user.UserDTO;
+import com.tnh.baseware.core.dtos.user.UserTokenDTO;
+import com.tnh.baseware.core.entities.user.Menu;
+import com.tnh.baseware.core.entities.user.User;
+import com.tnh.baseware.core.entities.adu.Organization;
+import com.tnh.baseware.core.exceptions.BWCNotFoundException;
+import com.tnh.baseware.core.exceptions.BWCValidationException;
+import com.tnh.baseware.core.forms.user.ChangePasswordForm;
+import com.tnh.baseware.core.forms.user.RegisterForm;
+import com.tnh.baseware.core.forms.user.ResetPasswordForm;
+import com.tnh.baseware.core.forms.user.UserEditorForm;
+import com.tnh.baseware.core.forms.user.UserProfileForm;
+import com.tnh.baseware.core.mappers.user.IMenuMapper;
+import com.tnh.baseware.core.mappers.user.IUserMapper;
+import com.tnh.baseware.core.mappers.adu.IOrganizationMapper;
+import com.tnh.baseware.core.properties.SecurityProperties;
+import com.tnh.baseware.core.repositories.adu.IOrganizationRepository;
+import com.tnh.baseware.core.repositories.user.IMenuRepository;
+import com.tnh.baseware.core.repositories.user.IRoleRepository;
+import com.tnh.baseware.core.repositories.user.IUserRepository;
+import com.tnh.baseware.core.securities.JwtTokenService;
+import com.tnh.baseware.core.services.GenericService;
+import com.tnh.baseware.core.services.MessageService;
+import com.tnh.baseware.core.services.user.IUserService;
+import com.tnh.baseware.core.utils.BasewareUtils;
+import com.tnh.baseware.core.utils.LogStyleHelper;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class UserService extends GenericService<User, UserEditorForm, UserDTO, IUserRepository, IUserMapper, UUID>
+        implements IUserService {
+
+    IRoleRepository roleRepository;
+    IOrganizationRepository organizationRepository;
+    IMenuRepository menuRepository;
+    PasswordEncoder passwordEncoder;
+    JwtTokenService jwtTokenService;
+    SecurityProperties securityProperties;
+    TenantService tenantService;
+    IMenuMapper menuMapper;
+    IOrganizationMapper organizationMapper;
+    GenericEntityFetcher fetcher;
+
+    public UserService(IUserRepository repository,
+            IUserMapper mapper,
+            MessageService messageService,
+            IRoleRepository roleRepository,
+            IOrganizationRepository organizationRepository,
+            IMenuRepository menuRepository,
+            PasswordEncoder passwordEncoder,
+            JwtTokenService jwtTokenService,
+            EnumRegistry enumRegistry,
+            SecurityProperties securityProperties,
+            TenantService tenantService,
+            IMenuMapper menuMapper, 
+            IOrganizationMapper organizationMapper,
+            GenericEntityFetcher fetcher) {
+        super(repository, mapper, messageService, User.class, enumRegistry);
+        this.roleRepository = roleRepository;
+        this.organizationRepository = organizationRepository;
+        this.menuRepository = menuRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
+        this.securityProperties = securityProperties;
+        this.tenantService = tenantService;
+        this.menuMapper = menuMapper;
+        this.organizationMapper = organizationMapper;
+        this.fetcher = fetcher;
+    }
+
+    @Override
+    @Transactional
+    public UserDTO create(UserEditorForm form) {
+        var user = mapper.formToEntity(form, fetcher, roleRepository, passwordEncoder);
+        return mapper.entityToDTO(repository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public UserDTO update(UUID id, UserEditorForm form) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        mapper.updateUserFromForm(form, user, fetcher, roleRepository);
+        return mapper.entityToDTO(repository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public UserDTO registerUser(RegisterForm form, HttpServletRequest request) {
+        var tenantName = request.getHeader("X-Tenant");
+        if (BasewareUtils.isBlank(tenantName)) {
+            throw new BWCValidationException(messageService.getMessage("tenant.name.empty"));
+        }
+
+        var tenant = tenantService.findByNameAndActiveTrue(tenantName)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("tenant.not.found", tenantName)));
+
+        TenantContext.setTenant(TenantContextDTO.builder()
+                .tenantId(tenant.getName())
+                .schemaName(tenant.getSchemaName())
+                .build());
+
+        try {
+            if (repository.existsByUsernameOrPhoneOrEmailOrIdn(form.getUsername(), form.getPhone(), form.getEmail(),
+                    form.getIdn())) {
+                throw new BWCValidationException(messageService.getMessage("user.already.exists"));
+            }
+
+            var user = User.builder()
+                    .username(form.getUsername())
+                    .password(passwordEncoder.encode(form.getPassword()))
+                    .firstName(form.getFirstName())
+                    .lastName(form.getLastName())
+                    .fullName(form.getFullName())
+                    .phone(form.getPhone())
+                    .email(form.getEmail())
+                    .avatarUrl(form.getAvatarUrl())
+                    .idn(form.getIdn())
+                    .ial(form.getIal())
+                    .enabled(securityProperties.getRegister().isEnabled())
+                    .build();
+
+            var roles = roleRepository.findAllByField("name", securityProperties.getRegister().getRoleDefault());
+            var role = BasewareUtils.isBlank(roles) ? null : roles.getFirst();
+
+            if (BasewareUtils.isBlank(role)) {
+                throw new BWCNotFoundException(messageService.getMessage("role.not.found"));
+            }
+
+            user.addRole(role);
+            return mapper.entityToDTO(repository.save(user));
+        } finally {
+            TenantContext.clear();
+        }
+    }
+
+    @Override
+    @Transactional
+    public UserDTO editProfile(UUID id, UserProfileForm form) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+
+        if (!BasewareUtils.isBlank(form.getPhone()) && !form.getPhone().equals(user.getPhone())) {
+            if (repository.existsByPhone(form.getPhone())) {
+                throw new BWCValidationException(messageService.getMessage("user.phone.already.exists"));
+            }
+            user.setPhone(form.getPhone());
+        }
+
+        if (!BasewareUtils.isBlank(form.getEmail()) && !form.getEmail().equals(user.getEmail())) {
+            if (repository.existsByEmail(form.getEmail())) {
+                throw new BWCValidationException(messageService.getMessage("user.email.already.exists"));
+            }
+            user.setEmail(form.getEmail());
+        }
+
+        if (!BasewareUtils.isBlank(form.getIdn()) && !form.getIdn().equals(user.getIdn())) {
+            if (repository.existsByIdn(form.getIdn())) {
+                throw new BWCValidationException(messageService.getMessage("user.idn.already.exists"));
+            }
+            user.setIdn(form.getIdn());
+        }
+
+        user.setFirstName(form.getFirstName());
+        user.setLastName(form.getLastName());
+        user.setFullName(form.getFullName());
+        user.setAvatarUrl(form.getAvatarUrl());
+        user.setIal(form.getIal());
+        return mapper.entityToDTO(repository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public void enableUser(UUID id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        user.setEnabled(true);
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void disableUser(UUID id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        user.setEnabled(false);
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void lockUser(UUID id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        user.setLocked(true);
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void unlockUser(UUID id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        user.setLocked(false);
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void resetFailedLoginAttempts(UUID id) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        user.setFailedLoginAttempts(0);
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(UUID id, ChangePasswordForm form) {
+        var user = repository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", id)));
+        validatePasswordChange(user, form);
+
+        user.setPassword(passwordEncoder.encode(form.getPasswordNew()));
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordForm form) {
+        var user = repository.findById(form.getUserId())
+                .orElseThrow(
+                        () -> new BWCNotFoundException(messageService.getMessage("user.not.found", form.getUserId())));
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
+        repository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserTokenDTO findByToken(String token) {
+        if (BasewareUtils.isBlank(token)) {
+            log.debug(LogStyleHelper.debug("Token is null or blank, skipping user retrieval"));
+            throw new BWCValidationException(messageService.getMessage("token.blank"));
+        }
+
+        var username = jwtTokenService.extractUsername(token)
+                .orElseThrow(() -> new BWCValidationException(messageService.getMessage("token.invalid")));
+
+        var user = repository.findByUsername(username)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("user.not.found", username)));
+
+        List<Menu> menus;
+        if (Boolean.TRUE.equals(user.getSuperAdmin())) {
+            menus = menuRepository.findAllWithParent();
+        } else {
+            menus = user.getRoles().stream()
+                    .flatMap(role -> role.getMenus().stream()).filter(menu -> menu.getParent() == null)
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Menu::getMenuOrder))),
+                            ArrayList::new));
+        }
+
+        List<Organization> owners = new ArrayList();
+        if (Boolean.FALSE.equals(user.getSuperAdmin())) {
+            owners = organizationRepository.findAllOwnersByUser(user.getId());
+        }
+
+        if (BasewareUtils.isBlank(menus)) {
+            log.debug(LogStyleHelper.debug("User {} has no menus"), username);
+            throw new BWCNotFoundException(messageService.getMessage("user.menus.not.found", username));
+        }
+
+        return UserTokenDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .avatarUrl(user.getAvatarUrl())
+                .idn(user.getIdn())
+                .ial(user.getIal())
+                .enabled(user.getEnabled())
+                .locked(user.getLocked())
+                .lockTime(user.getLockTime())
+                .accountExpiryDate(user.getAccountExpiryDate())
+                .failedLoginAttempts(user.getFailedLoginAttempts())
+                .superAdmin(user.getSuperAdmin())
+                .menus(menuMapper.entitiesToDTOs(menus))
+                .owners(organizationMapper.entitiesToDTOs(owners))
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAllByOrganization(UUID id) {
+        var organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        return repository.findAllByEntitiesContaining("organizations", organization)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public Page<UserDTO> findAllByOrganization(UUID id, Pageable pageable) {
+        var organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        return repository.findAllByEntitiesContaining("organizations", organization, pageable).map(mapper::entityToDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAllWithoutOrganization(UUID id) {
+        var organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        return repository.findAllByEntitiesNotContaining("organizations", organization)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> findAllWithoutOrganization(UUID id, Pageable pageable) {
+        var organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("organization.not.found", id)));
+        return repository.findAllByEntitiesNotContaining("organizations", organization, pageable)
+                .map(mapper::entityToDTO);
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAllWithoutRole(UUID id) {
+        var role = roleRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        return repository.findAllByEntitiesNotContaining("roles", role)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> findAllWithoutRole(UUID id, Pageable pageable) {
+        var role = roleRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        return repository.findAllByEntitiesNotContaining("roles", role, pageable).map(mapper::entityToDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> findAllByRole(UUID id) {
+        var role = roleRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        return repository.findAllByEntitiesContaining("roles", role)
+                .stream()
+                .map(mapper::entityToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> findAllByRole(UUID id, Pageable pageable) {
+        var role = roleRepository.findById(id)
+                .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("role.not.found", id)));
+        return repository.findAllByEntitiesContaining("roles", role, pageable).map(mapper::entityToDTO);
+    }
+
+    private void validatePasswordChange(User user, ChangePasswordForm form) {
+        if (!passwordEncoder.matches(form.getPasswordOld(), user.getPassword())) {
+            throw new BWCValidationException(messageService.getMessage("auth.password.not.match"));
+        }
+        if (!form.getPasswordNew().equals(form.getPasswordNewConfirm())) {
+            throw new BWCValidationException(messageService.getMessage("auth.password.not.match"));
+        }
+        if (passwordEncoder.matches(form.getPasswordNew(), user.getPassword())) {
+            throw new BWCValidationException(messageService.getMessage("auth.password.same"));
+        }
+    }
+
+}
