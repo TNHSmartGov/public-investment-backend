@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.tnh.baseware.core.audits.listeners.AllocationExecutionAuditListener;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.investment.Project;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlanLine;
@@ -22,7 +21,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners(AllocationExecutionAuditListener.class)
 public class AllocationExecution extends Auditable<String> implements Serializable {
 
     @Serial

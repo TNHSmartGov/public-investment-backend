@@ -13,6 +13,9 @@ import com.tnh.baseware.core.services.GenericService;
 import com.tnh.baseware.core.services.MessageService;
 import com.tnh.baseware.core.services.investment.IInvestmentPlanService;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class InvestmentPlanService extends GenericService<InvestmentPlan, InvestmentPlanEditorForm
             , InvestmentPlanDTO, IInvestmentPlanRepository, IInvestmentPlanMapper, UUID>
     implements
