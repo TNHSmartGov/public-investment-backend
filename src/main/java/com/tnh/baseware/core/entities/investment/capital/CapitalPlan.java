@@ -1,6 +1,5 @@
 package com.tnh.baseware.core.entities.investment.capital;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tnh.baseware.core.entities.audit.Auditable;
 
 import jakarta.persistence.*;
@@ -48,14 +47,13 @@ public class CapitalPlan extends Auditable<String> implements Serializable {
     @Column(nullable = false)
     Boolean isApproved;
 
-    @Column(nullable = false)
-    String typePlan;
-
     String description;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "capitalPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    Set<CapitalPlanLine> capitalPlanLines  = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "capital_id") // Liên kết đến danh mục nguồn vốn
+    Capital capital;
+
+    @OneToMany(mappedBy = "capitalPlan")
+    Set<ProjectCapitalAllocation> projectAllocations = new HashSet<>();
 
 }

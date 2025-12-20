@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.tnh.baseware.core.dtos.investment.capital.CADSummaryDTO;
 import com.tnh.baseware.core.entities.audit.Identifiable;
 
 import lombok.*;
@@ -32,7 +31,6 @@ public class DisbursementDTO extends RepresentationModel<DisbursementDTO> implem
     String responsiblePerson;
     Boolean isApproved;
     Boolean deleted;
-    CADSummaryDTO capitalAllocationDetail;
     String description;
 
 }

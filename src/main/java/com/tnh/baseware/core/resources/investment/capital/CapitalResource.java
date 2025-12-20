@@ -3,7 +3,7 @@ package com.tnh.baseware.core.resources.investment.capital;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalDTO;
 import com.tnh.baseware.core.dtos.user.ApiMessageDTO;
 import com.tnh.baseware.core.entities.investment.capital.Capital;
-import com.tnh.baseware.core.forms.investment.CapitalEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalEditorForm;
 import com.tnh.baseware.core.properties.SystemProperties;
 import com.tnh.baseware.core.resources.GenericResource;
 import com.tnh.baseware.core.services.IGenericService;

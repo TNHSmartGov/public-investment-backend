@@ -9,8 +9,6 @@ import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.tnh.baseware.core.dtos.investment.project.ProjectSummaryDTO;
-import com.tnh.baseware.core.entities.audit.Category;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

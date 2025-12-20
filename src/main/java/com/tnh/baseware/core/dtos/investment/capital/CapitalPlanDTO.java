@@ -2,12 +2,14 @@ package com.tnh.baseware.core.dtos.investment.capital;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tnh.baseware.core.entities.audit.Identifiable;
+import com.tnh.baseware.core.entities.investment.capital.ProjectCapitalAllocation;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.UUID;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,7 +28,9 @@ public class CapitalPlanDTO extends RepresentationModel<CapitalPlanDTO> implemen
     Integer endYear;
     Long totalAmountPlan;
     Boolean isApproved;
-    String typePlan;
     String description;
+
+    CapitalDTO capital;
+    List<ProjectCapitalAllocation> projectAllocations;
 
 }

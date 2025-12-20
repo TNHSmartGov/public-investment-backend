@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tnh.baseware.core.dtos.investment.capital.CapitalPlanDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlan;
-import com.tnh.baseware.core.forms.investment.CapitalPlanEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalPlanEditorForm;
 import com.tnh.baseware.core.properties.SystemProperties;
 import com.tnh.baseware.core.resources.GenericResource;
 import com.tnh.baseware.core.services.IGenericService;

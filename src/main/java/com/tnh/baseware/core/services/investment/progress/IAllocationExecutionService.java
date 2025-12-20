@@ -11,12 +11,6 @@ import com.tnh.baseware.core.services.IGenericService;
 public interface IAllocationExecutionService extends
         IGenericService<AllocationExecution, AllocationExecutionEditorForm, AllocationExecutionDTO, UUID> {
 
-        @Override
-        AllocationExecutionDTO create(AllocationExecutionEditorForm form);
-
-        @Override
-        AllocationExecutionDTO update(UUID id, AllocationExecutionEditorForm form);
-
         List<AllocationExecutionDTO> getListByProjectId(UUID id);
 }
 

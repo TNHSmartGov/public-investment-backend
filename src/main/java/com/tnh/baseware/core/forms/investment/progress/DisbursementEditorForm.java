@@ -30,6 +30,9 @@ public class DisbursementEditorForm {
     @NotNull(message = "{amount.not.null}")
     BigDecimal amount;
 
+    @NotNull(message = "Dòng kế hoạch năm không được để trống")
+    private UUID capitalPlanLineId;
+
     @NotNull(message = "{execution.date.not.null}")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/yyyy")
     Date disbursementDate;

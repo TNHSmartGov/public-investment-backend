@@ -6,7 +6,6 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tnh.baseware.core.entities.audit.Identifiable;
-import com.tnh.baseware.core.dtos.investment.capital.CADSummaryDTO;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +29,6 @@ public class AllocationExecutionDTO extends RepresentationModel<AllocationExecut
     String responsiblePerson;
     Boolean isApproved;
     Boolean deleted;
-    CADSummaryDTO capitalAllocationDetail;
     String description;
 
 }

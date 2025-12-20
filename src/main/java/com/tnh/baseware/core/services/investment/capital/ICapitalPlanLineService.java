@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.tnh.baseware.core.dtos.investment.capital.CapitalPlanLineDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlanLine;
-import com.tnh.baseware.core.forms.investment.CapitalPlanLineEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalPlanLineEditorForm;
 import com.tnh.baseware.core.services.IGenericService;
 
 public interface ICapitalPlanLineService extends

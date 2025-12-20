@@ -1,14 +1,12 @@
-package com.tnh.baseware.core.forms.investment;
+package com.tnh.baseware.core.forms.investment.capital;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,21 +18,29 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CapitalPlanLineEditorForm {
+public class CapitalPlanEditorForm {
 
-    BigDecimal amount;
+    @NotNull(message = "{code.not.null}")
     String code;
+
+    @NotBlank(message = "{name.not.blank}")
+    String name;
+
+    @NotBlank(message = "{startYear.not.blank}")
+    String startYear;
+
+    @NotBlank(message = "{endYear.not.blank}")
+    String endYear;
+
+    @NotNull(message = "{totalAmountPlan.not.null}")
+    Long totalAmountPlan;
+
+    @NotNull(message = "{isApproved.not.null}")
+    Boolean isApproved;
+
     String description;
-    
-    @NotNull(message = "{capitalplanid.not.null}")
-    @Schema(description = "Values are retrieved from 'capitalplans'")
-    UUID capitalPlanId;
 
     @NotNull(message = "{capitalid.not.null}")
     @Schema(description = "Values are retrieved from 'capitals'")
     UUID capitalId;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy", timezone = "UTC")
-    Date planLineDate;
-
 }

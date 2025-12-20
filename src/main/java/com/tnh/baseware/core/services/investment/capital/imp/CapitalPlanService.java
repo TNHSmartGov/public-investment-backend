@@ -2,7 +2,7 @@ package com.tnh.baseware.core.services.investment.capital.imp;
 
 import com.tnh.baseware.core.dtos.investment.capital.CapitalPlanDTO;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlan;
-import com.tnh.baseware.core.forms.investment.CapitalPlanEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalPlanEditorForm;
 import com.tnh.baseware.core.mappers.investment.capital.ICapitalPlanMapper;
 import com.tnh.baseware.core.repositories.investment.capital.ICapitalPlanRepository;
 import com.tnh.baseware.core.services.GenericService;

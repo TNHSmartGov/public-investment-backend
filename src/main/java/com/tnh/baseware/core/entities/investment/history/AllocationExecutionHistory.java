@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -32,7 +32,7 @@ public class AllocationExecutionHistory extends Auditable<String> implements Ser
 
     BigDecimal amount;
 
-    Date executionDate;
+    Instant executionDate;
 
     String action;
 

@@ -6,8 +6,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,45 +20,38 @@ import lombok.experimental.FieldDefaults;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProjectEditorForm {
 
-    @NotNull(message = "{code.not.null}")
+    UUID id;
+
+    @NotBlank(message = "Mã dự án không được để trống")
     String code;
 
-    @NotNull(message = "{name.not.null}")
+    @NotBlank(message = "Tên dự án không được để trống")
     String name;
 
-    @Schema(description = "Total planned investment for the project'")
-    BigDecimal totalInvestmentPlanned;
+    UUID parentProjectId; // ID của dự án cha hoặc gói vốn tổng
+    Boolean isProgram;   // TRUE: Gói vốn, FALSE: Dự án cụ thể
 
-    @NotNull(message = "{status.not.null}")
-    @Schema(description = "1: Đang chuẩn bị, 2: Đang thực hiện, 3: Đã hoàn thành, 4: Đã hủy")
-    String status;
-
-    @Schema(description = "Start date of the project in format yyyyy")
-    String startPlanDate;
-
-    @Schema(description = "End date of the project in format yyyyy")
-    String endPlanDate;
-
-    String description;
-
-    @NotNull(message = "{industry.not.null}")
-    @Schema(description = "Values are retrieved from 'industries'")
+    @NotNull(message = "Ngành không được để trống")
     UUID industryId;
 
-    @Schema(description = "Values are retrieved from 'categories'")
+    @NotNull(message = "Nhóm dự án không được để trống")
     UUID groupId;
 
-    @Schema(description = "Values are retrieved from 'categories'")
     UUID projectLevelId;
 
-    @NotNull(message = "{ownerOrg.not.null}")
-    @Schema(description = "Values are retrieved from 'organizations'")
+    @NotNull(message = "Chủ đầu tư không được để trống")
     UUID ownerOrgId;
 
-    @Schema(description = "Values are retrieved from 'organizations'")
+    @NotNull(message = "Đơn vị QLDA không được để trống")
     UUID pmuOrgId;
 
-    @Schema(description = "Values are retrieved from 'organizations'")
+    @NotNull(message = "Địa bàn không được để trống")
     UUID admOrgId;
 
+    BigDecimal totalInvestmentPlanned;
+    String status;
+    String startPlanDate;
+    String endPlanDate;
+    String description;
+    Boolean isApproved;
 }

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.tnh.baseware.core.dtos.investment.capital.CapitalDTO;
 import com.tnh.baseware.core.entities.investment.capital.Capital;
-import com.tnh.baseware.core.forms.investment.CapitalEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalEditorForm;
 import com.tnh.baseware.core.services.IGenericService;
 
 public interface ICapitalService extends

@@ -8,13 +8,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tnh.baseware.core.entities.audit.Auditable;
+import com.tnh.baseware.core.entities.investment.progress.AllocationExecution;
+import com.tnh.baseware.core.entities.investment.progress.Disbursement;
 
 @Getter
 @Setter
@@ -36,12 +36,48 @@ public class CapitalPlanLine extends Auditable<String> implements Serializable {
 
     BigDecimal amount;
 
+    Integer year;
+
+    String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "capital_plan_id", nullable = false)
-    CapitalPlan capitalPlan;
+    CapitalPlan capitalPlan;    
 
-    Integer planYear;
+    @OneToMany(mappedBy = "capitalPlanLine", cascade = CascadeType.ALL)
+    Set<Disbursement> disbursements = new HashSet<>();
 
-    String description;
+    @OneToMany(mappedBy = "capitalPlanLine", cascade = CascadeType.ALL)
+    Set<AllocationExecution> allocationExecutions = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_allocation_id", nullable = false)
+    ProjectCapitalAllocation projectCapitalAllocation;
+
+    //Tính tổng lũy kế số tiền đã thực hiện/giải ngân trong năm
+    public BigDecimal getTotalAllocationExecution() {
+        if (this.allocationExecutions == null || this.allocationExecutions.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        
+        return this.allocationExecutions.stream()
+            .map(exec -> exec.getAmount() != null ? exec.getAmount() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    //Tính tổng số tiền đã giải ngân thực tế trong năm
+    public BigDecimal getTotalDisbursed() {
+        if (disbursements == null || disbursements.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return disbursements.stream()
+            .map(disb -> disb.getAmount() != null ? disb.getAmount() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    
+    //Tính số dư vốn còn lại có thể giải ngân
+    public BigDecimal getRemainingAmount() {
+        return amount.subtract(getTotalDisbursed());
+    }
 }

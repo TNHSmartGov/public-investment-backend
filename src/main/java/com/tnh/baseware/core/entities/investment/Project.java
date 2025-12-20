@@ -6,7 +6,7 @@ import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.audit.Category;
 import com.tnh.baseware.core.entities.investment.bid.BidPlan;
 import com.tnh.baseware.core.entities.investment.bid.PackageBid;
-import com.tnh.baseware.core.entities.investment.capital.CapitalAllocation;
+import com.tnh.baseware.core.entities.investment.capital.ProjectCapitalAllocation;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -85,11 +85,6 @@ public class Project extends Auditable<String> implements Serializable {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Builder.Default
-    Set<CapitalAllocation> capitalAllocations = new HashSet<>();
-
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    @Builder.Default
     Set<ApprovalDecision> approvalDecisions = new HashSet<>();
 
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -125,5 +120,8 @@ public class Project extends Auditable<String> implements Serializable {
     @Column(name = "is_approved")
     @Builder.Default
     Boolean isApproved = false;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private Set<ProjectCapitalAllocation> capitalAllocations = new HashSet<>();
 
 }

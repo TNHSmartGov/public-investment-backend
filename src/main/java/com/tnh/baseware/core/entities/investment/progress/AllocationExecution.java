@@ -3,13 +3,13 @@ package com.tnh.baseware.core.entities.investment.progress;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tnh.baseware.core.audits.listeners.AllocationExecutionAuditListener;
 import com.tnh.baseware.core.entities.audit.Auditable;
-import com.tnh.baseware.core.entities.investment.capital.CapitalAllocationDetail;
+import com.tnh.baseware.core.entities.investment.Project;
+import com.tnh.baseware.core.entities.investment.capital.CapitalPlanLine;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,20 +38,22 @@ public class AllocationExecution extends Auditable<String> implements Serializab
 
     BigDecimal amount;
 
-    Date executionDate;
+    Instant executionDate;
 
     String responsiblePerson;
 
     Boolean isApproved;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    AllocationExecution parent;
+    @JoinColumn(name = "project_id", nullable = false)
+    Project project; // Giải ngân cho dự án nào
+
+    @Column(name = "execution_type")
+    String executionType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @JoinColumn(name = "capital_allocation_detail_id", nullable = false)
-    CapitalAllocationDetail capitalAllocationDetail;
+    @JoinColumn(name = "plan_line_id", nullable = false)
+    CapitalPlanLine capitalPlanLine;
 
     String description;
 

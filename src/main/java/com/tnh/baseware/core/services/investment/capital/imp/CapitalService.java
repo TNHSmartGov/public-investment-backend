@@ -3,7 +3,7 @@ package com.tnh.baseware.core.services.investment.capital.imp;
 import com.tnh.baseware.core.dtos.investment.capital.CapitalDTO;
 import com.tnh.baseware.core.entities.investment.capital.Capital;
 import com.tnh.baseware.core.exceptions.BWCNotFoundException;
-import com.tnh.baseware.core.forms.investment.CapitalEditorForm;
+import com.tnh.baseware.core.forms.investment.capital.CapitalEditorForm;
 import com.tnh.baseware.core.mappers.investment.capital.ICapitalMapper;
 import com.tnh.baseware.core.repositories.investment.capital.ICapitalRepository;
 import com.tnh.baseware.core.services.GenericService;
