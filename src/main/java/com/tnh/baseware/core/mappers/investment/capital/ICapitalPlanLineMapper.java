@@ -10,6 +10,7 @@ import com.tnh.baseware.core.mappers.IGenericMapper;
 import com.tnh.baseware.core.mappers.investment.progress.IAllocationExecutionMapper;
 import com.tnh.baseware.core.mappers.investment.progress.IDisbursementMapper;
 import com.tnh.baseware.core.repositories.investment.capital.ICapitalPlanRepository;
+import com.tnh.baseware.core.repositories.investment.capital.IProjectCapitalAllocationRepository;
 
 @Mapper(
     componentModel = "spring", 
@@ -23,19 +24,23 @@ import com.tnh.baseware.core.repositories.investment.capital.ICapitalPlanReposit
 public interface ICapitalPlanLineMapper extends IGenericMapper<CapitalPlanLine, CapitalPlanLineEditorForm, CapitalPlanLineDTO> {
 
     @Mapping(target = "capitalPlan", expression = "java(fetcher.formToEntity(capitalPlanRepository, form.getCapitalPlanId()))")
+    @Mapping(target = "projectCapitalAllocation", expression = "java(fetcher.formToEntity(projectCapitalAllocationRepository, form.getProjectCapitalAllocationId()))")
     @Mapping(target = "disbursements", ignore = true)
     @Mapping(target = "allocationExecutions", ignore = true)
     CapitalPlanLine formToEntity(CapitalPlanLineEditorForm form,
                                 @Context GenericEntityFetcher fetcher,
-                                @Context ICapitalPlanRepository capitalPlanRepository);
+                                @Context ICapitalPlanRepository capitalPlanRepository,
+                                @Context IProjectCapitalAllocationRepository projectCapitalAllocationRepository);
 
     @Mapping(target = "capitalPlan", expression = "java(fetcher.formToEntity(capitalPlanRepository, form.getCapitalPlanId()))")
+    @Mapping(target = "projectCapitalAllocation", expression = "java(fetcher.formToEntity(projectCapitalAllocationRepository, form.getProjectCapitalAllocationId()))")
     @Mapping(target = "disbursements", ignore = true)
     @Mapping(target = "allocationExecutions", ignore = true)
     void updateFromForm(CapitalPlanLineEditorForm form, 
                         @MappingTarget CapitalPlanLine capitalPlanLine,
                         @Context GenericEntityFetcher fetcher,
-                        @Context ICapitalPlanRepository capitalPlanRepository);
+                        @Context ICapitalPlanRepository capitalPlanRepository,
+                        @Context IProjectCapitalAllocationRepository projectCapitalAllocationRepository);
 
     // Sửa lỗi Unknown property bằng cách chỉ định đúng source và target
     @Mapping(target = "capitalPlanId", source = "capitalPlan.id")

@@ -28,5 +28,16 @@ public interface ICapitalPlanLineRepository extends IGenericRepository<CapitalPl
     List<CapitalPlanLine> findAllByDeletedFalse();
 
     // 4. (Tùy chọn) Kiểm tra xem năm đó đã tồn tại kế hoạch cho nguồn này chưa
+    // 4. Tính tổng phân bổ cho một dự án trong nguồn vốn này (Validation Logic mới)
+    @Query("SELECT SUM(c.amount) FROM CapitalPlanLine c " +
+           "WHERE c.projectCapitalAllocation.id = :projectAllocationId AND c.deleted = false")
+    BigDecimal sumAmountByProjectAllocationId(@Param("projectAllocationId") UUID projectAllocationId);
+
+    // 5. Tính tổng phân bổ, loại trừ dòng hiện tại (Update validation)
+    @Query("SELECT SUM(c.amount) FROM CapitalPlanLine c " +
+           "WHERE c.projectCapitalAllocation.id = :projectAllocationId AND c.id <> :excludeId AND c.deleted = false")
+    BigDecimal sumAmountByProjectAllocationIdAndExcludeId(@Param("projectAllocationId") UUID projectAllocationId, 
+                                                          @Param("excludeId") UUID excludeId);
+
     Boolean existsByCapitalPlanIdAndYearAndDeletedFalse(UUID capitalPlanId, Integer year);
 }

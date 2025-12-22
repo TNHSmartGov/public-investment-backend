@@ -14,6 +14,8 @@ import com.tnh.baseware.core.forms.investment.capital.CapitalPlanLineEditorForm;
 import com.tnh.baseware.core.mappers.investment.capital.ICapitalPlanLineMapper;
 import com.tnh.baseware.core.repositories.investment.capital.ICapitalPlanLineRepository;
 import com.tnh.baseware.core.repositories.investment.capital.ICapitalPlanRepository;
+import com.tnh.baseware.core.entities.investment.capital.ProjectCapitalAllocation;
+import com.tnh.baseware.core.repositories.investment.capital.IProjectCapitalAllocationRepository;
 import com.tnh.baseware.core.services.GenericService;
 import com.tnh.baseware.core.services.MessageService;
 import com.tnh.baseware.core.services.investment.capital.ICapitalPlanLineService;
@@ -31,15 +33,18 @@ public class CapitalPlanLineService extends
 
     ICapitalPlanLineRepository repository;
     ICapitalPlanRepository capitalPlanRepository;
+    IProjectCapitalAllocationRepository projectCapitalAllocationRepository;
     GenericEntityFetcher fetcher;
 
     public CapitalPlanLineService(ICapitalPlanLineRepository repository,
                                 ICapitalPlanLineMapper mapper,
                                 ICapitalPlanRepository capitalPlanRepository,
+                                IProjectCapitalAllocationRepository projectCapitalAllocationRepository,
                                 MessageService messageService, 
                                 GenericEntityFetcher fetcher) {
         super(repository, mapper, messageService, CapitalPlanLine.class);
         this.capitalPlanRepository = capitalPlanRepository;
+        this.projectCapitalAllocationRepository = projectCapitalAllocationRepository;
         this.fetcher = fetcher;
     }
 
@@ -50,7 +55,7 @@ public class CapitalPlanLineService extends
         validateQuota(null, form);
 
         // 2. Map và Lưu
-        var capitalPlanLine = mapper.formToEntity(form, fetcher, capitalPlanRepository);
+        var capitalPlanLine = mapper.formToEntity(form, fetcher, capitalPlanRepository, projectCapitalAllocationRepository);
         return mapper.entityToDTO(repository.save(capitalPlanLine));
     }
 
@@ -65,28 +70,51 @@ public class CapitalPlanLineService extends
         validateQuota(id, form);
 
         // 3. Cập nhật thông tin
-        mapper.updateFromForm(form, capitalPlanLine, fetcher, capitalPlanRepository);
+        mapper.updateFromForm(form, capitalPlanLine, fetcher, capitalPlanRepository, projectCapitalAllocationRepository);
         
         return mapper.entityToDTO(repository.save(capitalPlanLine));
     }
 
-    //Logic kiểm tra: Tổng vốn các năm không được vượt quá vốn trung hạn của dự án/nguồn
+    //Logic kiểm tra: 
+    // 1. Tổng vốn các năm không được vượt quá vốn trung hạn của dự án/nguồn (QUAN TRỌNG)
+    // 2. Tổng vốn các năm không được vượt quá tổng nguồn (Safe guard)
     private void validateQuota(UUID currentLineId, CapitalPlanLineEditorForm form) {
-        // Lấy thông tin kế hoạch vốn tổng (Cha)
+        // --- Validation 1: Kiểm tra theo Dự án (ProjectCapitalAllocation) ---
+        ProjectCapitalAllocation projectAllocation = projectCapitalAllocationRepository.findById(form.getProjectCapitalAllocationId())
+            .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("project.allocation.not.found", form.getProjectCapitalAllocationId())));
+
+        // Kiểm tra xem Project Allocation có thuộc về Capital Plan được chọn không
+        if (!projectAllocation.getCapitalPlan().getId().equals(form.getCapitalPlanId())) {
+             throw new BWCValidationException(messageService.getMessage("project.allocation.capital.mismatch"));
+        }
+
+        BigDecimal projectAllocatedAmount = (currentLineId == null)
+            ? repository.sumAmountByProjectAllocationId(form.getProjectCapitalAllocationId())
+            : repository.sumAmountByProjectAllocationIdAndExcludeId(form.getProjectCapitalAllocationId(), currentLineId);
+        
+        if (projectAllocatedAmount == null) projectAllocatedAmount = BigDecimal.ZERO;
+        
+        BigDecimal projectLimit = projectAllocation.getAmountInMediumTerm();
+        BigDecimal newProjectTotal = projectAllocatedAmount.add(form.getAmount());
+
+        if (projectLimit != null && projectLimit.compareTo(newProjectTotal) < 0) {
+            throw new BWCValidationException(messageService.getMessage("capital.planline.project.over"));
+        }
+
+        // --- Validation 2: Kiểm tra theo Tổng nguồn (CapitalPlan) ---
         CapitalPlan capitalPlan = capitalPlanRepository.findById(form.getCapitalPlanId())
                 .orElseThrow(() -> new BWCNotFoundException(messageService.getMessage("capitalplan.not.found", form.getCapitalPlanId())));
 
-        // Tính tổng đã phân bổ trong database (trừ dòng hiện tại nếu là update)
-        BigDecimal allocatedAmount = (currentLineId == null) 
+        BigDecimal planAllocatedAmount = (currentLineId == null) 
                 ? repository.sumAmountByCapitalPlanId(form.getCapitalPlanId())
                 : repository.sumAmountByCapitalPlanIdAndExcludeId(form.getCapitalPlanId(), currentLineId);
         
-        if (allocatedAmount == null) allocatedAmount = BigDecimal.ZERO;
+        if (planAllocatedAmount == null) planAllocatedAmount = BigDecimal.ZERO;
 
-        BigDecimal limit = capitalPlan.getTotalAmountPlan(); // Hạn mức tổng
-        BigDecimal newTotal = allocatedAmount.add(form.getAmount()); // Tổng mới nếu lưu thành công
+        BigDecimal planLimit = capitalPlan.getTotalAmountPlan();
+        BigDecimal newPlanTotal = planAllocatedAmount.add(form.getAmount());
 
-        if (limit != null && limit.compareTo(newTotal) < 0) {
+        if (planLimit != null && planLimit.compareTo(newPlanTotal) < 0) {
             throw new BWCValidationException(messageService.getMessage("capital.planline.over"));
         }
     }

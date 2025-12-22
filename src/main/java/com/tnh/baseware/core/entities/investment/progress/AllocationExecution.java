@@ -14,6 +14,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import com.tnh.baseware.core.entities.investment.progress.listeners.AllocationExecutionListener;
+
 @Getter
 @Setter
 @Builder
@@ -21,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EntityListeners(AllocationExecutionListener.class)
 public class AllocationExecution extends Auditable<String> implements Serializable {
 
     @Serial

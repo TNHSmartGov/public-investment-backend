@@ -1,4 +1,4 @@
-package com.tnh.baseware.core.entities.investment.progress;
+package com.tnh.baseware.core.entities.investment.history;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,8 +14,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import com.tnh.baseware.core.entities.investment.progress.listeners.DisbursementListener;
-
 @Getter
 @Setter
 @Builder
@@ -23,8 +21,7 @@ import com.tnh.baseware.core.entities.investment.progress.listeners.Disbursement
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners(DisbursementListener.class)
-public class Disbursement extends Auditable<String> implements Serializable {
+public class DisbursementHistory extends Auditable<String> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -33,30 +30,33 @@ public class Disbursement extends Auditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
+    // Link to the original record
+    @Column(name = "original_id", nullable = false)
+    UUID originalId;
+
+    @Column(name = "action_type") // INSERT, UPDATE, DELETE
+    String actionType;
+
+    // Snapshot fields
     String investmentItem;
-
     String code;
-
     BigDecimal amount;
-
     Instant disbursementDate;
-
     String responsiblePerson;
-
-    String voucherNumber; // Số chứng từ
-
+    String voucherNumber;
     Boolean isApproved;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    Project project; // Giải ngân cho dự án nào
-
+    
     @Column(name = "disbursement_type")
     String disbursementType;
+    
+    String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_line_id", nullable = false)
+    @JoinColumn(name = "project_id")
+    Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_line_id")
     CapitalPlanLine capitalPlanLine;
 
-    String description;
 }

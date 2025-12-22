@@ -45,5 +45,9 @@ public class CapitalPlanLineEditorForm {
     @NotNull(message = "{capitalPlanId.not.null}")
     @Schema(description = "ID của Kế hoạch trung hạn (CapitalPlan) cha")
     UUID capitalPlanId;
+
+    @NotNull(message = "{projectCapitalAllocationId.not.null}")
+    @Schema(description = "ID phiếu phân bổ vốn trung hạn cho dự án")
+    UUID projectCapitalAllocationId;
     
 }

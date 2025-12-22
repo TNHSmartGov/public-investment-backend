@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ProjectCapitalAllocationServiceImpl extends
+public class ProjectCapitalAllocationService extends
         GenericService<ProjectCapitalAllocation, ProjectCapitalAllocationEditorForm, ProjectCapitalAllocationDTO, IProjectCapitalAllocationRepository, IProjectCapitalAllocationMapper, UUID>
         implements IProjectCapitalAllocationService {
 
@@ -36,7 +36,7 @@ public class ProjectCapitalAllocationServiceImpl extends
     ICapitalPlanRepository capitalPlanRepository;
     GenericEntityFetcher fetcher;
 
-    public ProjectCapitalAllocationServiceImpl(IProjectCapitalAllocationRepository repository,
+    public ProjectCapitalAllocationService(IProjectCapitalAllocationRepository repository,
                                             IProjectCapitalAllocationMapper mapper,
                                             IProjectRepository projectRepository,
                                             ICapitalPlanRepository capitalPlanRepository,
