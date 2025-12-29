@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.audit.Category;
 import com.tnh.baseware.core.entities.investment.Project;
+import com.tnh.baseware.core.entities.investment.bid.BidPlan;
 
 @Getter
 @Setter
@@ -33,6 +34,10 @@ public class PackageBid extends Auditable<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bid_plan_id")
+    BidPlan bidPlan;
 
     String name;
 

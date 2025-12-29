@@ -10,6 +10,8 @@ import com.tnh.baseware.core.entities.audit.Auditable;
 import com.tnh.baseware.core.entities.investment.Project;
 import com.tnh.baseware.core.entities.investment.capital.CapitalPlanLine;
 
+import com.tnh.baseware.core.enums.ActionType;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -34,8 +36,9 @@ public class DisbursementHistory extends Auditable<String> implements Serializab
     @Column(name = "original_id", nullable = false)
     UUID originalId;
 
-    @Column(name = "action_type") // INSERT, UPDATE, DELETE
-    String actionType;
+    @Column(name = "action_type")
+    @Enumerated(EnumType.STRING)
+    ActionType actionType;
 
     // Snapshot fields
     String investmentItem;

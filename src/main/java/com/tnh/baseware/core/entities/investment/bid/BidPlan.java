@@ -4,6 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -52,6 +54,10 @@ public class BidPlan extends Auditable<String> implements Serializable {
     BigDecimal totalImplementedAmount;
 
     BigDecimal totalBidPackageAmount;
+
+    @OneToMany(mappedBy = "bidPlan", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Set<PackageBid> packageBids = new HashSet<>();
 
     String description;
 }

@@ -18,6 +18,24 @@ public interface ICapitalPlanLineRepository extends IGenericRepository<CapitalPl
            "WHERE c.capitalPlan.id = :capitalPlanId AND c.deleted = false")
     BigDecimal sumAmountByCapitalPlanId(@Param("capitalPlanId") UUID capitalPlanId);
 
+    // New query: Tính tổng phân bổ cho một dự án trong một năm cụ thể
+    @Query("SELECT SUM(cpl.amount) FROM CapitalPlanLine cpl " +
+           "WHERE cpl.projectCapitalAllocation.project.id = :projectId " +
+           "AND cpl.year = :year")
+    BigDecimal sumAmountByProjectIdAndYear(@Param("projectId") UUID projectId, @Param("year") Integer year);
+
+    // New query: Tính tổng kế hoạch vốn của một nguồn vốn trong một năm
+    @Query("SELECT SUM(cpl.amount) FROM CapitalPlanLine cpl " +
+           "WHERE cpl.capitalPlan.capital.id = :capitalId " +
+           "AND cpl.year = :year")
+    BigDecimal sumAmountByCapitalIdAndYear(@Param("capitalId") UUID capitalId, @Param("year") Integer year);
+
+    // New query: Tính tổng kế hoạch vốn của một chủ đầu tư trong một năm
+    @Query("SELECT SUM(cpl.amount) FROM CapitalPlanLine cpl " +
+           "WHERE cpl.projectCapitalAllocation.project.ownerOrg.id = :ownerId " +
+           "AND cpl.year = :year")
+    BigDecimal sumAmountByOwnerIdAndYear(@Param("ownerId") UUID ownerId, @Param("year") Integer year);
+
     // 2. Tính tổng số tiền phân bổ, loại trừ bản ghi hiện tại (dùng cho Update)
     @Query("SELECT SUM(c.amount) FROM CapitalPlanLine c " +
            "WHERE c.capitalPlan.id = :capitalPlanId AND c.id <> :excludeId AND c.deleted = false")

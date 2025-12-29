@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -43,4 +47,7 @@ public class RegisterForm {
     @NotNull(message = "{ial.not.null}")
     @Schema(description = "0: level 0 identity account, 1: level 1 identity account, 2: level 2 identity account", defaultValue = "0")
     Integer ial;
+
+    @NotEmpty(message = "{organization.not.empty}")
+    Set<UUID> organizationIds;
 }

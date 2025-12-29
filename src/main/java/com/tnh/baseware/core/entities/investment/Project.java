@@ -7,6 +7,7 @@ import com.tnh.baseware.core.entities.audit.Category;
 import com.tnh.baseware.core.entities.investment.bid.BidPlan;
 import com.tnh.baseware.core.entities.investment.bid.PackageBid;
 import com.tnh.baseware.core.entities.investment.capital.ProjectCapitalAllocation;
+import com.tnh.baseware.core.enums.ProjectStatus;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -109,7 +110,8 @@ public class Project extends Auditable<String> implements Serializable {
 
     BigDecimal totalInvestmentPlanned;
 
-    String status; //PLANNING, IMPLEMENTING, CLOSED
+    @Enumerated(EnumType.STRING)
+    ProjectStatus status;
 
     String startPlanDate;
 

@@ -7,24 +7,26 @@ import com.tnh.baseware.core.repositories.investment.history.IDisbursementHistor
 
 import jakarta.persistence.*;
 
+import com.tnh.baseware.core.enums.ActionType;
+
 public class DisbursementListener {
 
     @PostPersist
     public void postPersist(Disbursement entity) {
-        saveHistory(entity, "INSERT");
+        saveHistory(entity, ActionType.INSERT);
     }
 
     @PostUpdate
     public void postUpdate(Disbursement entity) {
-        saveHistory(entity, "UPDATE");
+        saveHistory(entity, ActionType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(Disbursement entity) {
-        saveHistory(entity, "DELETE");
+        saveHistory(entity, ActionType.DELETE);
     }
 
-    private void saveHistory(Disbursement entity, String action) {
+    private void saveHistory(Disbursement entity, ActionType action) {
         IDisbursementHistoryRepository repository = ApplicationContextProvider.getBean(IDisbursementHistoryRepository.class);
         
         DisbursementHistory history = DisbursementHistory.builder()

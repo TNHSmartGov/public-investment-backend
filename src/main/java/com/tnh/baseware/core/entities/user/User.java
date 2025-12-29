@@ -64,10 +64,6 @@ public class User extends Auditable<String> implements Serializable {
 
     @Column(nullable = false)
     @Builder.Default
-    Boolean ignorePayment = Boolean.FALSE; // user can view cams without payment
-
-    @Column(nullable = false)
-    @Builder.Default
     Integer ial = 0;
 
     @Column(nullable = false)

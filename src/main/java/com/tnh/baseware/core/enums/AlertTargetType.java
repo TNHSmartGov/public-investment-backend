@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 public enum AlertTargetType implements BaseEnum<String> {
 
     USER_SUBSCRIPTION("USER_SUBSCRIPTION", "User Subscription", "Đăng ký của người dùng"),
-    PAYMENT("PAYMENT", "Payment", "Thanh toán"),
     USERS("USERS", "Users", "Người dùng");
 
     String value;

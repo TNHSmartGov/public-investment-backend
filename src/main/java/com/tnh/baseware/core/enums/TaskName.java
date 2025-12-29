@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
 public enum TaskName implements BaseEnum<String> {
-    TRANSACTION_TASK("paymentTransactionTask"),
     QR_GENERATION_TASK("qrGenerationTask"),
     DASHBOARD_GENERATION_TASK("dashboardGenerationTask");
 

@@ -7,24 +7,26 @@ import com.tnh.baseware.core.repositories.investment.history.IAllocationExecutio
 
 import jakarta.persistence.*;
 
+import com.tnh.baseware.core.enums.ActionType;
+
 public class AllocationExecutionListener {
 
     @PostPersist
     public void postPersist(AllocationExecution entity) {
-        saveHistory(entity, "INSERT");
+        saveHistory(entity, ActionType.INSERT);
     }
 
     @PostUpdate
     public void postUpdate(AllocationExecution entity) {
-        saveHistory(entity, "UPDATE");
+        saveHistory(entity, ActionType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(AllocationExecution entity) {
-        saveHistory(entity, "DELETE");
+        saveHistory(entity, ActionType.DELETE);
     }
 
-    private void saveHistory(AllocationExecution entity, String action) {
+    private void saveHistory(AllocationExecution entity, ActionType action) {
         IAllocationExecutionHistoryRepository repository = ApplicationContextProvider.getBean(IAllocationExecutionHistoryRepository.class);
         
         AllocationExecutionHistory history = AllocationExecutionHistory.builder()

@@ -6,8 +6,10 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.hateoas.RepresentationModel;
 
+import com.tnh.baseware.core.dtos.adu.OrganizationDTO;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -38,8 +40,8 @@ public class UserDTO extends RepresentationModel<UserDTO> implements Identifiabl
     Instant lockTime;
     Instant accountExpiryDate;
     Integer failedLoginAttempts;
-    Boolean ignorePayment;
     Boolean superAdmin;
     String userType;
     List<RoleDTO> roles;
+    Set<OrganizationDTO> organizations;
 }

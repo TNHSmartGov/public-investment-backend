@@ -45,4 +45,11 @@ public class GenericEntityFetcher {
         result.add(entity);
         return result;
     }
+
+    public <T, I> Set<T> fetchEntitiesByIds(IGenericRepository<T, I> repository, java.util.Collection<I> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(repository.findAllById(ids));
+    }
 }
