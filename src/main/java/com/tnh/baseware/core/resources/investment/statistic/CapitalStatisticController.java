@@ -24,8 +24,9 @@ public class CapitalStatisticController {
     @GetMapping
     @Operation(summary = "Get capital statistics by year and month")
     public ResponseEntity<List<CapitalStatisticDTO>> getCapitalStatistics(
-            @RequestParam(required = true) Integer year,
-            @RequestParam(required = true) Integer month) {
-        return ResponseEntity.ok(capitalStatisticService.getCapitalStatistics(year, month));
+            @RequestParam(required = true) Integer planYear,
+            @RequestParam(required = false) Integer reportYear,
+            @RequestParam(required = false) Integer reportMonth) {
+        return ResponseEntity.ok(capitalStatisticService.getCapitalStatistics(planYear, reportYear, reportMonth));
     }
 }

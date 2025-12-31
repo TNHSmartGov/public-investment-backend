@@ -24,8 +24,9 @@ public class ProjectStatisticController {
     @GetMapping
     @Operation(summary = "Get project statistics by year and month")
     public ResponseEntity<List<ProjectStatisticDTO>> getProjectStatistics(
-            @RequestParam(required = true) Integer year,
-            @RequestParam(required = true) Integer month) {
-        return ResponseEntity.ok(projectStatisticService.getProjectStatistics(year, month));
+            @RequestParam(required = true) Integer planYear,
+            @RequestParam(required = false) Integer reportYear,
+            @RequestParam(required = false) Integer reportMonth) {
+        return ResponseEntity.ok(projectStatisticService.getProjectStatistics(planYear, reportYear, reportMonth));
     }
 }

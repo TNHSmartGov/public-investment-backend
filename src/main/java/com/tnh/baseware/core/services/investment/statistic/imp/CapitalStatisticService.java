@@ -31,15 +31,16 @@ public class CapitalStatisticService implements ICapitalStatisticService {
     IDisbursementRepository disbursementRepository;
 
     @Override
-    public List<CapitalStatisticDTO> getCapitalStatistics(Integer year, Integer month) {
+    public List<CapitalStatisticDTO> getCapitalStatistics(Integer planYear, Integer reportYear, Integer reportMonth) {
         List<CapitalStatisticDTO> result = new ArrayList<>();
         List<Capital> capitals = capitalRepository.findAll();
 
-        // Calculate end of the reporting month
+        // Calculate end of the reporting period (cutoff date)
         Instant reportDate = null;
-        if (year != null && month != null) {
-             YearMonth yearMonth = YearMonth.of(year, month);
-             reportDate = yearMonth.atEndOfMonth().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant();
+        if (reportYear != null) {
+            int month = (reportMonth != null) ? reportMonth : 12; // Default to end of year if month is missing
+            YearMonth yearMonth = YearMonth.of(reportYear, month);
+            reportDate = yearMonth.atEndOfMonth().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant();
         }
 
         for (Capital capital : capitals) {
@@ -47,16 +48,16 @@ public class CapitalStatisticService implements ICapitalStatisticService {
             BigDecimal executionAmount = BigDecimal.ZERO;
             BigDecimal disbursementAmount = BigDecimal.ZERO;
 
-            if (year != null) {
-                yearPlanAmount = capitalPlanLineRepository.sumAmountByCapitalIdAndYear(capital.getId(), year);
+            if (planYear != null) {
+                // Kế hoạch vốn: Lấy theo Năm kế hoạch (planYear)
+                yearPlanAmount = capitalPlanLineRepository.sumAmountByCapitalIdAndYear(capital.getId(), planYear);
                 if (yearPlanAmount == null) yearPlanAmount = BigDecimal.ZERO;
 
-                if (reportDate != null) {
-                    executionAmount = allocationExecutionRepository.sumAmountByCapitalIdAndYearAndDateBefore(
-                            capital.getId(), year, reportDate);
-                    disbursementAmount = disbursementRepository.sumAmountByCapitalIdAndYearAndDateBefore(
-                            capital.getId(), year, reportDate);
-                }
+                // Thực hiện & Giải ngân: Lấy theo Năm kế hoạch + Tích lũy đến thời điểm báo cáo (reportDate)
+                executionAmount = allocationExecutionRepository.sumAmountByCapitalIdAndYearAndDateBefore(
+                        capital.getId(), planYear, reportDate);
+                disbursementAmount = disbursementRepository.sumAmountByCapitalIdAndYearAndDateBefore(
+                        capital.getId(), planYear, reportDate);
             }
 
             if (executionAmount == null) executionAmount = BigDecimal.ZERO;

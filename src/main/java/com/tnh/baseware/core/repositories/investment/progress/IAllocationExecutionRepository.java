@@ -38,25 +38,25 @@ public interface IAllocationExecutionRepository extends IGenericRepository<Alloc
     @Query("SELECT SUM(ae.amount) FROM AllocationExecution ae " +
            "WHERE ae.project.id = :projectId " +
            "AND ae.capitalPlanLine.year = :year " +
-           "AND ae.executionDate <= :reportDate")
+           "AND (:reportDate IS NULL OR ae.executionDate <= :reportDate)")
     BigDecimal sumAmountByProjectIdAndYearAndDateBefore(@Param("projectId") UUID projectId,
                                                         @Param("year") Integer year,
                                                         @Param("reportDate") Instant reportDate);
 
-    // New query: Tính tổng thực hiện của một nguồn vốn trong một năm tích lũy đến ngày báo cáo
+    // New query: Tính tổng giá trị thực hiện của một nguồn vốn trong một năm tích lũy đến ngày báo cáo
     @Query("SELECT SUM(ae.amount) FROM AllocationExecution ae " +
            "WHERE ae.capitalPlanLine.capitalPlan.capital.id = :capitalId " +
            "AND ae.capitalPlanLine.year = :year " +
-           "AND ae.executionDate <= :reportDate")
+           "AND (:reportDate IS NULL OR ae.executionDate <= :reportDate)")
     BigDecimal sumAmountByCapitalIdAndYearAndDateBefore(@Param("capitalId") UUID capitalId,
                                                         @Param("year") Integer year,
                                                         @Param("reportDate") Instant reportDate);
 
-    // New query: Tính tổng thực hiện của một chủ đầu tư trong một năm tích lũy đến ngày báo cáo
+    // New query: Tính tổng giá trị thực hiện của một chủ đầu tư trong một năm tích lũy đến ngày báo cáo
     @Query("SELECT SUM(ae.amount) FROM AllocationExecution ae " +
            "WHERE ae.project.ownerOrg.id = :ownerId " +
            "AND ae.capitalPlanLine.year = :year " +
-           "AND ae.executionDate <= :reportDate")
+           "AND (:reportDate IS NULL OR ae.executionDate <= :reportDate)")
     BigDecimal sumAmountByOwnerIdAndYearAndDateBefore(@Param("ownerId") UUID ownerId,
                                                       @Param("year") Integer year,
                                                       @Param("reportDate") Instant reportDate);

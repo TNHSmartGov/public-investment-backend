@@ -19,4 +19,6 @@ public class OwnerStatisticDTO {
     BigDecimal yearPlanAmount;         // Kế hoạch vốn năm
     BigDecimal executionAmount;        // Lũy kế thực hiện đến tháng/năm
     BigDecimal disbursementAmount;     // Lũy kế giải ngân đến tháng/năm
+    
+    Double disbursementRate;           // Tỷ lệ giải ngân (%)
 }

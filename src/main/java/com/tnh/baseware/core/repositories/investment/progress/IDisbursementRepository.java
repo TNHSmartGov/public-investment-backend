@@ -34,7 +34,7 @@ public interface IDisbursementRepository extends IGenericRepository<Disbursement
     @Query("SELECT SUM(ae.amount) FROM Disbursement ae " +
            "WHERE ae.project.id = :projectId " +
            "AND ae.capitalPlanLine.year = :year " +
-           "AND ae.disbursementDate <= :reportDate")
+           "AND (:reportDate IS NULL OR ae.disbursementDate <= :reportDate)")
     BigDecimal sumAmountByProjectIdAndYearAndDateBefore(@Param("projectId") UUID projectId,
                                                         @Param("year") Integer year,
                                                         @Param("reportDate") Instant reportDate);
@@ -43,7 +43,7 @@ public interface IDisbursementRepository extends IGenericRepository<Disbursement
     @Query("SELECT SUM(d.amount) FROM Disbursement d " +
            "WHERE d.capitalPlanLine.capitalPlan.capital.id = :capitalId " +
            "AND d.capitalPlanLine.year = :year " +
-           "AND d.disbursementDate <= :reportDate")
+           "AND (:reportDate IS NULL OR d.disbursementDate <= :reportDate)")
     BigDecimal sumAmountByCapitalIdAndYearAndDateBefore(@Param("capitalId") UUID capitalId,
                                                         @Param("year") Integer year,
                                                         @Param("reportDate") Instant reportDate);
@@ -52,7 +52,7 @@ public interface IDisbursementRepository extends IGenericRepository<Disbursement
     @Query("SELECT SUM(d.amount) FROM Disbursement d " +
            "WHERE d.project.ownerOrg.id = :ownerId " +
            "AND d.capitalPlanLine.year = :year " +
-           "AND d.disbursementDate <= :reportDate")
+           "AND (:reportDate IS NULL OR d.disbursementDate <= :reportDate)")
     BigDecimal sumAmountByOwnerIdAndYearAndDateBefore(@Param("ownerId") UUID ownerId,
                                                       @Param("year") Integer year,
                                                       @Param("reportDate") Instant reportDate);

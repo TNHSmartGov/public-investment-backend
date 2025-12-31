@@ -21,11 +21,32 @@ public class OwnerStatisticController {
 
     IOwnerStatisticService ownerStatisticService;
 
+    @GetMapping("/top-lowest-rate")
+    @Operation(summary = "Get top owners with lowest disbursement rate")
+    public ResponseEntity<List<OwnerStatisticDTO>> getTopLowestRateOwners(
+            @RequestParam(required = true) Integer planYear,
+            @RequestParam(required = false) Integer reportYear,
+            @RequestParam(required = false) Integer reportMonth,
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        return ResponseEntity.ok(ownerStatisticService.getTopLowestRateOwners(planYear, reportYear, reportMonth, limit));
+    }
+
+    @GetMapping("/top-lowest-amount")
+    @Operation(summary = "Get top owners with lowest disbursement amount")
+    public ResponseEntity<List<OwnerStatisticDTO>> getTopLowestAmountOwners(
+            @RequestParam(required = true) Integer planYear,
+            @RequestParam(required = false) Integer reportYear,
+            @RequestParam(required = false) Integer reportMonth,
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        return ResponseEntity.ok(ownerStatisticService.getTopLowestAmountOwners(planYear, reportYear, reportMonth, limit));
+    }
+
     @GetMapping
     @Operation(summary = "Get owner statistics by year and month")
     public ResponseEntity<List<OwnerStatisticDTO>> getOwnerStatistics(
-            @RequestParam(required = true) Integer year,
-            @RequestParam(required = true) Integer month) {
-        return ResponseEntity.ok(ownerStatisticService.getOwnerStatistics(year, month));
+            @RequestParam(required = true) Integer planYear,
+            @RequestParam(required = false) Integer reportYear,
+            @RequestParam(required = false) Integer reportMonth) {
+        return ResponseEntity.ok(ownerStatisticService.getOwnerStatistics(planYear, reportYear, reportMonth));
     }
 }

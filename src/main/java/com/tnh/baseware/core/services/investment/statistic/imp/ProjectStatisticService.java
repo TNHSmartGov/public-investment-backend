@@ -1,5 +1,4 @@
 package com.tnh.baseware.core.services.investment.statistic.imp;
-
 import com.tnh.baseware.core.dtos.investment.statistic.ProjectStatisticDTO;
 import com.tnh.baseware.core.entities.investment.Project;
 import com.tnh.baseware.core.repositories.investment.IProjectRepository;
@@ -32,32 +31,34 @@ public class ProjectStatisticService implements IProjectStatisticService {
     IDisbursementRepository disbursementRepository;
 
     @Override
-    public List<ProjectStatisticDTO> getProjectStatistics(Integer year, Integer month) {
+    public List<ProjectStatisticDTO> getProjectStatistics(Integer planYear, Integer reportYear, Integer reportMonth) {
         List<ProjectStatisticDTO> result = new ArrayList<>();
         List<Project> projects = projectRepository.findAll();
 
-        // Calculate end of the reporting month
+        // Calculate end of the reporting period (cutoff date)
         Instant reportDate = null;
-        if (year != null && month != null) {
-             YearMonth yearMonth = YearMonth.of(year, month);
-             reportDate = yearMonth.atEndOfMonth().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant();
-        }
+        if (reportYear != null) {
+            int month = (reportMonth != null) ? reportMonth : 12; // Default to end of year if month is missing
+            YearMonth yearMonth = YearMonth.of(reportYear, month);
+            reportDate = yearMonth.atEndOfMonth().atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant();
+        } 
+        // If reportYear is null, reportDate remains null -> No cutoff, fetch ALL data
 
         for (Project project : projects) {
             BigDecimal yearPlanAmount = BigDecimal.ZERO;
             BigDecimal executionAmount = BigDecimal.ZERO;
             BigDecimal disbursementAmount = BigDecimal.ZERO;
 
-            if (year != null) {
-                yearPlanAmount = capitalPlanLineRepository.sumAmountByProjectIdAndYear(project.getId(), year);
+            if (planYear != null) {
+                // Kế hoạch vốn: Lấy theo Năm kế hoạch (planYear)
+                yearPlanAmount = capitalPlanLineRepository.sumAmountByProjectIdAndYear(project.getId(), planYear);
                 if (yearPlanAmount == null) yearPlanAmount = BigDecimal.ZERO;
 
-                if (reportDate != null) {
-                    executionAmount = allocationExecutionRepository.sumAmountByProjectIdAndYearAndDateBefore(
-                            project.getId(), year, reportDate);
-                    disbursementAmount = disbursementRepository.sumAmountByProjectIdAndYearAndDateBefore(
-                            project.getId(), year, reportDate);
-                }
+                // Thực hiện & Giải ngân: Lấy theo Năm kế hoạch + Tích lũy đến thời điểm báo cáo (reportDate)
+                executionAmount = allocationExecutionRepository.sumAmountByProjectIdAndYearAndDateBefore(
+                        project.getId(), planYear, reportDate);
+                disbursementAmount = disbursementRepository.sumAmountByProjectIdAndYearAndDateBefore(
+                        project.getId(), planYear, reportDate);
             }
 
             if (executionAmount == null) executionAmount = BigDecimal.ZERO;
